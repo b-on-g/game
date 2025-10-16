@@ -1,0 +1,8 @@
+$bog_game_realm $mol_object2
+	map \ 
+	map_rows /string[]
+	map_width 0
+	map_height 0
+	spawn_pos /number
+		0
+		0

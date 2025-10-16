@@ -1,0 +1,26 @@
+
+include \/mol/offline/install
+deploy \/hyoo/game/logo/logo.svg
+deploy \/hyoo/game/arcade/texture/healer/0.png
+deploy \/hyoo/game/arcade/texture/border.jpg
+deploy \/hyoo/game/arcade/texture/wall/0.jpg
+deploy \/hyoo/game/arcade/texture/wall/1.jpg
+deploy \/hyoo/game/arcade/texture/ground.jpg
+deploy \/hyoo/game/arcade/texture/meme/1.jpg
+deploy \/hyoo/game/arcade/texture/meme/2.jpg
+deploy \/hyoo/game/arcade/texture/meme/3.jpg
+deploy \/hyoo/game/arcade/texture/meme/4.jpg
+deploy \/hyoo/game/arcade/texture/meme/5.jpg
+deploy \/hyoo/game/arcade/texture/meme/6.jpg
+deploy \/hyoo/game/arcade/texture/meme/7.jpg
+deploy \/hyoo/game/arcade/texture/meme/8.jpg
+deploy \/hyoo/game/arcade/texture/meme/9.jpg
+deploy \/hyoo/game/arcade/texture/meme/10.jpg
+deploy \/hyoo/game/arcade/texture/meme/11.jpg
+deploy \/hyoo/game/arcade/texture/meme/12.jpg
+deploy \/hyoo/game/arcade/texture/meme/13.jpg
+deploy \/hyoo/game/arcade/texture/meme/14.jpg
+deploy \/hyoo/game/arcade/texture/meme/15.jpg
+deploy \/hyoo/game/arcade/texture/meme/16.jpg
+deploy \/hyoo/game/arcade/texture/meme/17.jpg
+deploy \/hyoo/game/arcade/texture/meme/18.jpg

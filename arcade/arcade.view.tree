@@ -1,0 +1,134 @@
+$bog_game_arcade $mol_stack
+	map \
+		\🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
+		\🛑🛑🟦⚫⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫⚫🟦🛑🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑⚫⚫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫💫⚫🟦🟦🟦⚫💫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫⚫⚫🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🟦🟦🟦🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑🎨⚫⚫⚫💫⚫⚫💫⚫⚫💫⚫⚫⚫🎨🟦🟦🟦🎨⚫⚫⚫💫⚫⚫💫⚫⚫💫⚫⚫⚫🎨🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🟦🟦🟦🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑⚫⚫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫💫⚫🟦🟦🟦⚫💫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫⚫⚫🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑🛑🟦⚫⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫⚫🟦🛑🛑
+		\🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
+	- map \
+		\🛑🛑🛑
+		\🛑💫🛑
+		\🛑🛑🛑
+	place_skins *
+		🎨 /string
+			\hyoo/game/arcade/texture/meme/1.jpg
+			\hyoo/game/arcade/texture/meme/2.jpg
+			\hyoo/game/arcade/texture/meme/3.jpg
+			\hyoo/game/arcade/texture/meme/4.jpg
+			\hyoo/game/arcade/texture/meme/5.jpg
+			\hyoo/game/arcade/texture/meme/6.jpg
+			\hyoo/game/arcade/texture/meme/7.jpg
+			\hyoo/game/arcade/texture/meme/8.jpg
+			\hyoo/game/arcade/texture/meme/9.jpg
+			\hyoo/game/arcade/texture/meme/10.jpg
+			\hyoo/game/arcade/texture/meme/11.jpg
+			\hyoo/game/arcade/texture/meme/12.jpg
+			\hyoo/game/arcade/texture/meme/13.jpg
+			\hyoo/game/arcade/texture/meme/14.jpg
+			\hyoo/game/arcade/texture/meme/15.jpg
+			\hyoo/game/arcade/texture/meme/16.jpg
+			\hyoo/game/arcade/texture/meme/17.jpg
+			\hyoo/game/arcade/texture/meme/18.jpg
+		🟦 /string
+			\hyoo/game/arcade/texture/wall/0.jpg
+			\hyoo/game/arcade/texture/wall/1.jpg
+		🛑 /string
+			\hyoo/game/arcade/texture/border.jpg
+	Realm $bog_game_realm
+		map <= map
+		spawn_pos => spawn_pos
+		map_rows => map_rows
+		map_width => map_width
+		map_height => map_height
+	actors /$bog_game_actor
+		<= Guy $bog_game_actor
+			Realm <= Realm
+			pos_spawn <= spawn_pos
+			pos => guy_pos
+			turn_left? => turn_left?
+			turn_right? => turn_right?
+			move_forward? => move_forward?
+			move_backward? => move_backward?
+			move_left? => move_left?
+			move_right? => move_right?
+			angle => guy_angle
+		<= Healer $bog_game_actor_ghost
+			Realm <= Realm
+			pos_spawn <= spawn_pos
+	sub /
+		<= View $mol_view sub /
+			<= Guy_eye $bog_game_eye
+				Realm <= Realm
+				pos <= guy_pos
+				angle <= guy_angle
+				wireframe <= wireframe
+				objects /$mol_3d_object
+					<= Floor $mol_3d_object
+						shape <= Square
+						texture <= Floor_image $mol_3d_image
+							uri \hyoo/game/arcade/texture/ground.jpg
+						transform <= floor_trans $mol_3d_mat4
+					<= Ceil $mol_3d_object
+						shape <= Square
+						texture <= Floor_image
+						transform <= ceil_trans $mol_3d_mat4
+					^ walls
+					^ avatars
+		<= Hud $mol_page
+			title <= title \$bog_game_arcade
+			tools /
+				<= Ear $mol_video_player
+					uri \https://mp3d.jamendo.com/?trackid=1889563&format=mp33
+					loop true
+					autoplay true
+					volume? 0.001
+					controls false
+				<= Wireframe $mol_check_box
+					title \Wireframe
+					checked? <=> wireframe? false
+				<= Sources $mol_link_source
+					uri \https://github.com/hyoo-ru/game.hyoo.ru
+			foot /
+				<= stat \
+	plugins /
+		<= Control $mol_keyboard_state
+			key *
+				W? <=> move_forward?
+				A? <=> move_left?
+				S? <=> move_backward?
+				D? <=> move_right?
+				Q? <=> turn_left?
+				E? <=> turn_right?
+				up? <=> move_forward?
+				left? <=> turn_left?
+				down? <=> move_backward?
+				right? <=> turn_right?
+				pageUp? <=> move_left?
+				pageDown? <=> move_right?
+	-
+	Square $mol_3d_shape_square
+	Image* $mol_3d_image
+		uri <= image_uri* \
+	walls /$mol_3d_object
+	avatars /$mol_3d_object
+	Wall* $mol_3d_object
+		shape <= Square
+		texture <= wall_image* $mol_3d_image
+		transform <= wall_trans* $mol_3d_mat4
+	Avatar* $mol_3d_object
+		shape <= Square
+		texture <= avaatr_image* $mol_3d_image
+			uri \hyoo/game/arcade/texture/healer/0.png
+		transform <= avatar_trans* $mol_3d_mat4

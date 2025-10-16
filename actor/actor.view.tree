@@ -1,0 +1,22 @@
+$bog_game_actor $mol_object2
+	auto null
+	Realm $bog_game_realm
+		place_by_pos* => place_by_pos*
+	pos? /number
+		^ pos_spawn
+	pos_spawn? /number
+		0
+		0
+	angle? 0
+	move_speed_track? 0
+	move_speed_side? 0
+	move_speed_track_max? 0.03
+	move_speed_side_max? 0.1
+	turn_speed? 0
+	turn_speed_max? 0.04
+	turn_left? false
+	turn_right? false
+	move_forward? false
+	move_backward? false
+	move_right? false
+	move_left? false
