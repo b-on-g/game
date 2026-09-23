@@ -1,0 +1,356 @@
+$mol_stack $mol_view
+
+$bog_game_realm $mol_object2
+	map \ 
+	map_rows /string[]
+	map_width 0
+	map_height 0
+	place_by_pos* \
+	spawn_pos /number
+		0
+		0
+
+$bog_game_actor $mol_object2
+	auto null
+	Realm $bog_game_realm
+		place_by_pos* => place_by_pos*
+	pos? /number
+		^ pos_spawn
+	pos_spawn? /number
+		0
+		0
+	angle? 0
+	move_speed_track? 0
+	move_speed_side? 0
+	move_speed_track_max? 0.03
+	move_speed_side_max? 0.1
+	turn_speed? 0
+	turn_speed_max? 0.04
+	turn_left? false
+	turn_right? false
+	move_forward? false
+	move_backward? false
+	move_right? false
+	move_left? false
+
+$bog_game_actor_ghost $bog_game_actor
+
+$bog_gamengine_draw $mol_view
+	dom_name \canvas
+	field *
+		^
+		width <= width 0
+		height <= height 0
+	scene $bog_gamengine_scene
+	cam $bog_gamengine_cam
+	light_dir Float32Array
+	ambient 0.35
+	wireframe? false
+	stat \
+
+$mol_video_player $mol_view
+	dom_name \video
+	playing? false
+	play null
+	pause null
+	volume? 0
+	time? 0
+	duration 0
+	attr *
+		src <= uri \
+		controls <= controls true
+		autoplay <= autoplay true
+		playsinline <= inline true
+		loop <= loop false
+		muted <= muted false
+		poster <= poster \
+	field *
+		srcObject <= stream null
+	event *
+		volumechange? <=> revolume? null
+		timeupdate? <=> retime? null
+		durationchange? <=> redurate? null
+		playing? <=> playing_event? null
+		play? <=> play_event? null
+		pause? <=> pause_event? null
+
+$mol_link $mol_view
+	uri \
+	dom_name \a
+	uri_off \
+	uri_native null
+	external false
+	attr *
+		^
+		href <= uri_unsafe <= uri_toggle \
+		title <= hint_safe <= hint \
+		target <= target \_self
+		download <= file_name \
+		mol_link_current <= current false
+		rel <= relation \
+	sub /$mol_view_content
+		<= title
+	arg *
+	event *
+		^
+		click? <=> click? <=> event_click? null
+
+$mol_svg $mol_view
+	dom_name \svg
+	dom_name_space \http://www.w3.org/2000/svg
+	font_size 16
+	font_family \
+	style_size *
+
+$mol_svg_root $mol_svg
+	dom_name \svg
+	attr *
+		^
+		viewBox <= view_box \0 0 100 100
+		preserveAspectRatio <= aspect \xMidYMid
+
+$mol_svg_path $mol_svg
+	dom_name \path
+	attr *
+		^
+		d <= geometry \
+
+
+$mol_icon $mol_svg_root
+	view_box \0 0 24 24
+	minimal_width 16
+	minimal_height 16
+	sub /
+		<= Path $mol_svg_path
+			geometry <= path \
+
+$mol_icon_script $mol_icon path \M17.8,20C17.4,21.2 16.3,22 15,22H5C3.3,22 2,20.7 2,19V18H5L14.2,18C14.6,19.2 15.7,20 17,20H17.8M19,2H8C6.3,2 5,3.3 5,5V16H16V17C16,17.6 16.4,18 17,18H18V5C18,4.4 18.4,4 19,4C19.6,4 20,4.4 20,5V6H22V5C22,3.3 20.7,2 19,2Z
+
+$mol_icon_script_text $mol_icon path \M17.8,20C17.4,21.2 16.3,22 15,22H5C3.3,22 2,20.7 2,19V18H5L14.2,18C14.6,19.2 15.7,20 17,20H17.8M19,2C20.7,2 22,3.3 22,5V6H20V5C20,4.4 19.6,4 19,4C18.4,4 18,4.4 18,5V18H17C16.4,18 16,17.6 16,17V16H5V5C5,3.3 6.3,2 8,2H19M8,6V8H15V6H8M8,10V12H14V10H8Z
+
+$mol_link_source $mol_link
+	hint @ \Source code
+	sub /
+		<= Icon $mol_icon_script_text
+
+$mol_scroll $mol_view
+	scroll_top? 0
+	scroll_left? 0
+	attr *
+		^
+		tabindex <= tabindex -1
+	event *
+		^
+		scroll? <=> event_scroll? null
+
+$mol_page $mol_view
+	dom_name \article
+	attr *
+		^
+		tabIndex <= tabindex -1
+	sub /
+		<= Head $mol_view
+			minimal_height 64
+			dom_name \header
+			sub <= head /
+				<= Title $mol_view
+					dom_name \h1
+					sub <= title_content /
+						<= Logo null
+						<= title
+				<= Tools $mol_view
+					sub <= tools /$mol_view_content
+		<= Body $mol_scroll
+			scroll_top? => body_scroll_top?
+			sub <= body_content /
+				<= Body_content $mol_view
+					sub <= body /$mol_view
+		<= Foot $mol_view
+			dom_name \footer
+			sub <= foot /$mol_view
+
+$mol_keyboard_state $mol_plugin
+	event *
+		^
+		keydown? <=> down? null
+		keyup? <=> up? null
+	key *
+
+$bog_game_arcade $mol_stack
+	map \
+		\🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
+		\🛑🛑🟦⚫⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫⚫🟦🛑🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑⚫⚫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫💫⚫🟦🟦🟦⚫💫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫⚫⚫🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🟦🟦🟦🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑🎨⚫⚫⚫💫⚫⚫💫⚫⚫💫⚫⚫⚫🎨🟦🟦🟦🎨⚫⚫⚫💫⚫⚫💫⚫⚫💫⚫⚫⚫🎨🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🟦🟦🟦🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑⚫⚫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫💫⚫🟦🟦🟦⚫💫⚫🎨🟦🎨⚫💫⚫🎨🟦🎨⚫⚫⚫🛑
+		\🛑⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🟦🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🛑
+		\🛑⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🛑
+		\🛑🟦⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫⚫🟦🛑
+		\🛑🛑🟦⚫⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫🟦🎨🟦⚫⚫⚫⚫🟦🛑🛑
+		\🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑
+	- map \
+		\🛑🛑🛑
+		\🛑💫🛑
+		\🛑🛑🛑
+	place_skins *
+		🎨 /string
+			\meme_1
+			\meme_2
+			\meme_3
+			\meme_4
+			\meme_5
+			\meme_6
+			\meme_7
+			\meme_8
+			\meme_9
+			\meme_10
+			\meme_11
+			\meme_12
+			\meme_13
+			\meme_14
+			\meme_15
+			\meme_16
+			\meme_17
+			\meme_18
+		🟦 /string
+			\wall_0
+			\wall_1
+		🛑 /string
+			\border
+	Realm $bog_game_realm
+		map <= map
+		spawn_pos => spawn_pos
+		map_rows => map_rows
+		map_width => map_width
+		map_height => map_height
+	actors /$bog_game_actor
+		<= Guy $bog_game_actor
+			Realm <= Realm
+			pos_spawn <= spawn_pos
+			pos => guy_pos
+			turn_left? => turn_left?
+			turn_right? => turn_right?
+			move_forward? => move_forward?
+			move_backward? => move_backward?
+			move_left? => move_left?
+			move_right? => move_right?
+			angle => guy_angle
+		<= Healer $bog_game_actor_ghost
+			Realm <= Realm
+			pos_spawn <= spawn_pos
+	sub /
+		<= View $mol_view sub /
+			<= Draw $bog_gamengine_draw
+				scene <= Scene
+				cam <= Cam
+				ambient 0.6
+		<= Hud $mol_page
+			title <= title \$bog_game_arcade
+			tools /
+				<= Ear $mol_video_player
+					uri \https://mp3d.jamendo.com/?trackid=1889563&format=mp33
+					loop true
+					autoplay true
+					volume? 0.001
+					controls false
+				<= Sources $mol_link_source
+					uri \https://github.com/b-on-g/game
+			foot /
+				<= stat \
+	plugins /
+		<= Control $mol_keyboard_state
+			key *
+				W? <=> move_forward?
+				A? <=> move_left?
+				S? <=> move_backward?
+				D? <=> move_right?
+				Q? <=> turn_left?
+				E? <=> turn_right?
+				up? <=> move_forward?
+				left? <=> turn_left?
+				down? <=> move_backward?
+				right? <=> turn_right?
+				pageUp? <=> move_left?
+				pageDown? <=> move_right?
+	Atlas $bog_gamengine_atlas
+		size 256
+		uris /
+			\bog/game/arcade/texture/border.jpg
+			\bog/game/arcade/texture/ground.jpg
+			\bog/game/arcade/texture/healer_0.png
+			\bog/game/arcade/texture/meme_1.jpg
+			\bog/game/arcade/texture/meme_2.jpg
+			\bog/game/arcade/texture/meme_3.jpg
+			\bog/game/arcade/texture/meme_4.jpg
+			\bog/game/arcade/texture/meme_5.jpg
+			\bog/game/arcade/texture/meme_6.jpg
+			\bog/game/arcade/texture/meme_7.jpg
+			\bog/game/arcade/texture/meme_8.jpg
+			\bog/game/arcade/texture/meme_9.jpg
+			\bog/game/arcade/texture/meme_10.jpg
+			\bog/game/arcade/texture/meme_11.jpg
+			\bog/game/arcade/texture/meme_12.jpg
+			\bog/game/arcade/texture/meme_13.jpg
+			\bog/game/arcade/texture/meme_14.jpg
+			\bog/game/arcade/texture/meme_15.jpg
+			\bog/game/arcade/texture/meme_16.jpg
+			\bog/game/arcade/texture/meme_17.jpg
+			\bog/game/arcade/texture/meme_18.jpg
+			\bog/game/arcade/texture/wall_0.jpg
+			\bog/game/arcade/texture/wall_1.jpg
+	Scene $bog_gamengine_scene
+		kids <= nodes /
+		batches /
+			<= Wall_batch $bog_gamengine_batch
+				shader <= Solid $bog_gamengine_shader_solid
+				shape <= Box $bog_gamengine_shape_box
+				atlas <= Atlas
+				nodes <= walls /
+			<= Floor_batch $bog_gamengine_batch
+				shader <= Solid
+				shape <= Plane $bog_gamengine_shape_plane
+					tile <= map_width
+				atlas <= Atlas
+				nodes /
+					<= Floor
+					<= Ceil
+			<= Avatar_batch $bog_gamengine_batch
+				shader <= Solid
+				shape <= Quad $bog_gamengine_shape_quad
+				atlas <= Atlas
+				nodes <= avatars /
+	Cam $bog_gamengine_cam_deep
+		fov 1.5707963
+		pos <= cam_pos Float32Array
+		rot <= cam_rot Float32Array
+	Wall* $bog_gamengine_mesh
+		shape <= Box
+		atlas <= Atlas
+		frame <= wall_frame* \
+		pos <= wall_pos* Float32Array
+	Floor $bog_gamengine_mesh
+		shape <= Plane
+		atlas <= Atlas
+		frame \ground
+		pos <= floor_pos Float32Array
+		size <= floor_size Float32Array
+	Ceil $bog_gamengine_mesh
+		shape <= Plane
+		atlas <= Atlas
+		frame \ground
+		pos <= ceil_pos Float32Array
+		rot <= ceil_rot Float32Array
+		size <= floor_size
+	Avatar* $bog_gamengine_mesh
+		shape <= Quad
+		atlas <= Atlas
+		frame \healer_0
+		pos <= avatar_pos* Float32Array
+		rot <= cam_rot
