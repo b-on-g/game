@@ -1,118 +1,100 @@
 namespace $.$$ {
 	export class $bog_game_arcade extends $.$bog_game_arcade {
+
 		stat() {
+			const [ x, y ] = this.guy_pos()
 			return [
-				`pos: ${this.guy_pos()
-					.map(v => v.toFixed(3))
-					.join(' x ')}`,
-				`angle: ${this.guy_angle().toFixed(3)}`,
-				`objects: ${this.Guy_eye().objects().length}`,
-				`shapes: ${this.Guy_eye().groups().size}`,
-				`textures: ${this.Guy_eye().texture_map().size}`,
-			].join(' | ')
+				`pos: ${ x.toFixed( 3 ) } x ${ y.toFixed( 3 ) }`,
+				`angle: ${ this.guy_angle().toFixed( 3 ) }`,
+				`objects: ${ this.nodes().length }`,
+				`batches: ${ this.Scene().batches().length }`,
+				`layers: ${ this.Atlas().ready() ? this.Atlas().uris().length : 0 }`,
+			].join( ' | ' )
 		}
 
-		@$mol_mem
-		world_items() {
-			const map = this.Realm().map_rows()
-			const items = [] as { x: number; y: number; kind: string; side: number }[]
-
-			for (let y = 0; y < map.length; ++y) {
-				const row = map[y]
-
-				for (let x = 0; x < row.length; ++x) {
-					if (row[x] === '⚫') continue
-
-					if (map[y + 1]?.[x] === '⚫') items.push({ x, y, kind: map[y][x], side: 0 })
-					if (map[y][x - 1] === '⚫') items.push({ x, y, kind: map[y][x], side: 1 })
-					if (map[y - 1]?.[x] === '⚫') items.push({ x, y, kind: map[y][x], side: 2 })
-					if (map[y][x + 1] === '⚫') items.push({ x, y, kind: map[y][x], side: 3 })
+		@ $mol_mem
+		wall_ids() {
+			const rows = this.map_rows()
+			const ids = [] as string[]
+			for( let y = 0; y < rows.length; ++y ) {
+				for( let x = 0; x < rows[ y ].length; ++x ) {
+					if( rows[ y ][ x ] !== '⚫' ) ids.push( `${ x }_${ y }` )
 				}
 			}
-
-			return items
+			return ids as readonly string[]
 		}
 
-		@$mol_mem
+		@ $mol_mem
 		walls() {
-			return this.world_items().map((_, i) => this.Wall(i))
+			return this.wall_ids().map( id => this.Wall( id ) )
 		}
 
 		@ $mol_mem_key
-		wall_image(index: number) {
-			const kind = this.world_items()[index].kind as keyof ReturnType<this['place_skins']>
-			const url = $mol_array_lottery(this.place_skins()[kind])
-			return this.Image(url)
+		wall_frame( id: string ) {
+			const [ x, y ] = id.split( '_' ).map( Number )
+			const kind = this.map_rows()[ y ][ x ] as keyof ReturnType< this[ 'place_skins' ] >
+			return $mol_array_lottery( this.place_skins()[ kind ] )
 		}
 
-		@$mol_mem_key
-		wall_trans(index: number) {
-			const items = this.world_items()
-			const { x, y, side } = items[index]
-
-			return $mol_3d_mat4.multiply(
-				$mol_3d_mat4.translation([x + 0.5, -y - 0.5, 0]),
-				$mol_3d_mat4.scaling([0.5, 0.5, 0.5]),
-				$mol_3d_mat4.rotation([1, 0, 0], Math.PI / 2),
-				$mol_3d_mat4.rotation([0, 1, 0], (side * -Math.PI) / 2),
-				$mol_3d_mat4.translation([0, 0, 1]),
-			)
+		@ $mol_mem_key
+		wall_pos( id: string ) {
+			const [ x, y ] = id.split( '_' ).map( Number )
+			return new Float32Array([ x + 0.5, 0.5, y + 0.5 ])
 		}
 
-		@$mol_mem
-		floor_trans() {
-			const width = this.map_width()
-			const height = this.map_height()
-
-			return $mol_3d_mat4.multiply(
-				$mol_3d_mat4.translation([width / 2, -height / 2, -0.5]),
-				$mol_3d_mat4.scaling([width / 2, height / 2, 1]),
-			)
+		@ $mol_mem
+		floor_pos() {
+			return new Float32Array([ this.map_width() / 2, 0, this.map_height() / 2 ])
 		}
 
-		@$mol_mem
-		ceil_trans() {
-			const width = this.map_width()
-			const height = this.map_height()
-
-			return $mol_3d_mat4.multiply(
-				$mol_3d_mat4.translation([width / 2, -height / 2, 0.5]),
-				$mol_3d_mat4.scaling([width / 2, -height / 2, 1]),
-			)
+		@ $mol_mem
+		floor_size() {
+			return new Float32Array([ this.map_width(), 1, this.map_height() ])
 		}
 
-		@$mol_mem
-		square_big_skin() {
-			return new Float32Array([0, 20, 20, 20, 0, 0, 20, 0])
+		@ $mol_mem
+		ceil_pos() {
+			return new Float32Array([ this.map_width() / 2, 1, this.map_height() / 2 ])
 		}
 
-		image_uri(url: string) {
-			return url
+		@ $mol_mem
+		ceil_rot() {
+			return new Float32Array([ Math.PI, 0, 0 ])
 		}
 
-		@$mol_mem
+		@ $mol_mem
+		cam_pos() {
+			const [ x, y ] = this.guy_pos()
+			return new Float32Array([ x, 0.25, y ])
+		}
+
+		@ $mol_mem
+		cam_rot() {
+			return new Float32Array([ 0, - this.guy_angle(), 0 ])
+		}
+
+		@ $mol_mem
 		avatars() {
-			return this.actors().map((_, i) => this.Avatar(i))
+			return this.actors().map( ( _, i ) => this.Avatar( i ) )
 		}
 
-		@$mol_mem_key
-		avatar_trans(index: number) {
-			const actor = this.actors()[index]
-			const [x, y] = actor.pos()
-
-			return $mol_3d_mat4.multiply(
-				$mol_3d_mat4.translation([+x, -y, 0]),
-				$mol_3d_mat4.scaling([0.5, 0.5, 0.5]),
-				$mol_3d_mat4.rotation([0, 0, 1], -actor.angle()),
-				$mol_3d_mat4.rotation([1, 0, 0], -Math.PI / 2),
-			)
+		@ $mol_mem_key
+		avatar_pos( index: number ) {
+			const [ x, y ] = this.actors()[ index ].pos()
+			return new Float32Array([ x, 0.5, y ])
 		}
 
-		@$mol_mem
+		@ $mol_mem
+		nodes() {
+			return [ ... this.walls(), this.Floor(), this.Ceil(), ... this.avatars() ]
+		}
+
+		@ $mol_mem
 		auto() {
-			for (const actor of this.actors()) {
+			for( const actor of this.actors() ) {
 				actor.auto()
 			}
 		}
+
 	}
 }

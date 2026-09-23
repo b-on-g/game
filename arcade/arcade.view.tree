@@ -23,29 +23,29 @@ $bog_game_arcade $mol_stack
 		\🛑🛑🛑
 	place_skins *
 		🎨 /string
-			\hyoo/game/arcade/texture/meme/1.jpg
-			\hyoo/game/arcade/texture/meme/2.jpg
-			\hyoo/game/arcade/texture/meme/3.jpg
-			\hyoo/game/arcade/texture/meme/4.jpg
-			\hyoo/game/arcade/texture/meme/5.jpg
-			\hyoo/game/arcade/texture/meme/6.jpg
-			\hyoo/game/arcade/texture/meme/7.jpg
-			\hyoo/game/arcade/texture/meme/8.jpg
-			\hyoo/game/arcade/texture/meme/9.jpg
-			\hyoo/game/arcade/texture/meme/10.jpg
-			\hyoo/game/arcade/texture/meme/11.jpg
-			\hyoo/game/arcade/texture/meme/12.jpg
-			\hyoo/game/arcade/texture/meme/13.jpg
-			\hyoo/game/arcade/texture/meme/14.jpg
-			\hyoo/game/arcade/texture/meme/15.jpg
-			\hyoo/game/arcade/texture/meme/16.jpg
-			\hyoo/game/arcade/texture/meme/17.jpg
-			\hyoo/game/arcade/texture/meme/18.jpg
+			\meme_1
+			\meme_2
+			\meme_3
+			\meme_4
+			\meme_5
+			\meme_6
+			\meme_7
+			\meme_8
+			\meme_9
+			\meme_10
+			\meme_11
+			\meme_12
+			\meme_13
+			\meme_14
+			\meme_15
+			\meme_16
+			\meme_17
+			\meme_18
 		🟦 /string
-			\hyoo/game/arcade/texture/wall/0.jpg
-			\hyoo/game/arcade/texture/wall/1.jpg
+			\wall_0
+			\wall_1
 		🛑 /string
-			\hyoo/game/arcade/texture/border.jpg
+			\border
 	Realm $bog_game_realm
 		map <= map
 		spawn_pos => spawn_pos
@@ -69,23 +69,10 @@ $bog_game_arcade $mol_stack
 			pos_spawn <= spawn_pos
 	sub /
 		<= View $mol_view sub /
-			<= Guy_eye $bog_game_eye
-				Realm <= Realm
-				pos <= guy_pos
-				angle <= guy_angle
-				wireframe <= wireframe
-				objects /$mol_3d_object
-					<= Floor $mol_3d_object
-						shape <= Square
-						texture <= Floor_image $mol_3d_image
-							uri \hyoo/game/arcade/texture/ground.jpg
-						transform <= floor_trans $mol_3d_mat4
-					<= Ceil $mol_3d_object
-						shape <= Square
-						texture <= Floor_image
-						transform <= ceil_trans $mol_3d_mat4
-					^ walls
-					^ avatars
+			<= Draw $bog_gamengine_draw
+				scene <= Scene
+				cam <= Cam
+				ambient 0.6
 		<= Hud $mol_page
 			title <= title \$bog_game_arcade
 			tools /
@@ -95,11 +82,8 @@ $bog_game_arcade $mol_stack
 					autoplay true
 					volume? 0.001
 					controls false
-				<= Wireframe $mol_check_box
-					title \Wireframe
-					checked? <=> wireframe? false
 				<= Sources $mol_link_source
-					uri \https://github.com/hyoo-ru/game.hyoo.ru
+					uri \https://github.com/b-on-g/game
 			foot /
 				<= stat \
 	plugins /
@@ -117,18 +101,78 @@ $bog_game_arcade $mol_stack
 				right? <=> turn_right?
 				pageUp? <=> move_left?
 				pageDown? <=> move_right?
-	-
-	Square $mol_3d_shape_square
-	Image* $mol_3d_image
-		uri <= image_uri* \
-	walls /$mol_3d_object
-	avatars /$mol_3d_object
-	Wall* $mol_3d_object
-		shape <= Square
-		texture <= wall_image* $mol_3d_image
-		transform <= wall_trans* $mol_3d_mat4
-	Avatar* $mol_3d_object
-		shape <= Square
-		texture <= avaatr_image* $mol_3d_image
-			uri \hyoo/game/arcade/texture/healer/0.png
-		transform <= avatar_trans* $mol_3d_mat4
+	Atlas $bog_gamengine_atlas
+		size 256
+		uris /
+			\bog/game/arcade/texture/border.jpg
+			\bog/game/arcade/texture/ground.jpg
+			\bog/game/arcade/texture/healer_0.png
+			\bog/game/arcade/texture/meme_1.jpg
+			\bog/game/arcade/texture/meme_2.jpg
+			\bog/game/arcade/texture/meme_3.jpg
+			\bog/game/arcade/texture/meme_4.jpg
+			\bog/game/arcade/texture/meme_5.jpg
+			\bog/game/arcade/texture/meme_6.jpg
+			\bog/game/arcade/texture/meme_7.jpg
+			\bog/game/arcade/texture/meme_8.jpg
+			\bog/game/arcade/texture/meme_9.jpg
+			\bog/game/arcade/texture/meme_10.jpg
+			\bog/game/arcade/texture/meme_11.jpg
+			\bog/game/arcade/texture/meme_12.jpg
+			\bog/game/arcade/texture/meme_13.jpg
+			\bog/game/arcade/texture/meme_14.jpg
+			\bog/game/arcade/texture/meme_15.jpg
+			\bog/game/arcade/texture/meme_16.jpg
+			\bog/game/arcade/texture/meme_17.jpg
+			\bog/game/arcade/texture/meme_18.jpg
+			\bog/game/arcade/texture/wall_0.jpg
+			\bog/game/arcade/texture/wall_1.jpg
+	Scene $bog_gamengine_scene
+		kids <= nodes /
+		batches /
+			<= Wall_batch $bog_gamengine_batch
+				shader <= Solid $bog_gamengine_shader_solid
+				shape <= Box $bog_gamengine_shape_box
+				atlas <= Atlas
+				nodes <= walls /
+			<= Floor_batch $bog_gamengine_batch
+				shader <= Solid
+				shape <= Plane $bog_gamengine_shape_plane
+					tile <= map_width
+				atlas <= Atlas
+				nodes /
+					<= Floor
+					<= Ceil
+			<= Avatar_batch $bog_gamengine_batch
+				shader <= Solid
+				shape <= Quad $bog_gamengine_shape_quad
+				atlas <= Atlas
+				nodes <= avatars /
+	Cam $bog_gamengine_cam_deep
+		fov 1.5707963
+		pos <= cam_pos Float32Array
+		rot <= cam_rot Float32Array
+	Wall* $bog_gamengine_mesh
+		shape <= Box
+		atlas <= Atlas
+		frame <= wall_frame* \
+		pos <= wall_pos* Float32Array
+	Floor $bog_gamengine_mesh
+		shape <= Plane
+		atlas <= Atlas
+		frame \ground
+		pos <= floor_pos Float32Array
+		size <= floor_size Float32Array
+	Ceil $bog_gamengine_mesh
+		shape <= Plane
+		atlas <= Atlas
+		frame \ground
+		pos <= ceil_pos Float32Array
+		rot <= ceil_rot Float32Array
+		size <= floor_size
+	Avatar* $bog_gamengine_mesh
+		shape <= Quad
+		atlas <= Atlas
+		frame \healer_0
+		pos <= avatar_pos* Float32Array
+		rot <= cam_rot
