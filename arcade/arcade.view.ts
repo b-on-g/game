@@ -32,8 +32,9 @@ namespace $.$$ {
 		@ $mol_mem_key
 		wall_frame( id: string ) {
 			const [ x, y ] = id.split( '_' ).map( Number )
-			const kind = this.map_rows()[ y ][ x ] as keyof ReturnType< this[ 'place_skins' ] >
-			return $mol_array_lottery( this.place_skins()[ kind ] )
+			const skins = this.place_skins()
+			const kind = this.map_rows()[ y ][ x ] as keyof typeof skins
+			return $mol_array_lottery( skins[ kind ] )
 		}
 
 		@ $mol_mem_key

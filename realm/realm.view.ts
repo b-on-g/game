@@ -47,7 +47,6 @@ namespace $.$$ {
 			return places
 		}
 
-		// @ $mol_mem
 		spawn_pos() {
 			const place = $mol_array_lottery(this.spawn_places())
 			return this.pos_by_coord([place.x, place.y])

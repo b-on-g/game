@@ -3,6 +3,7 @@ $bog_game_realm $mol_object2
 	map_rows /string[]
 	map_width 0
 	map_height 0
+	place_by_pos* \
 	spawn_pos /number
 		0
 		0
