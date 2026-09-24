@@ -128,6 +128,7 @@ $bog_game_arcade $mol_stack
 			\bog/game/arcade/texture/wall_0.jpg
 			\bog/game/arcade/texture/wall_1.jpg
 	Scene $bog_gamengine_scene
+		cam <= Cam
 		kids <= nodes /
 		batches /
 			<= Wall_batch $bog_gamengine_batch
@@ -138,7 +139,7 @@ $bog_game_arcade $mol_stack
 			<= Floor_batch $bog_gamengine_batch
 				shader <= Solid
 				shape <= Plane $bog_gamengine_shape_plane
-					tile <= map_width
+					tile <= map_tile Float32Array
 				atlas <= Atlas
 				nodes /
 					<= Floor
@@ -175,4 +176,4 @@ $bog_game_arcade $mol_stack
 		atlas <= Atlas
 		frame \healer_0
 		pos <= avatar_pos* Float32Array
-		rot <= cam_rot
+		billboard true

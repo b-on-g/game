@@ -54,6 +54,11 @@ namespace $.$$ {
 		}
 
 		@ $mol_mem
+		map_tile() {
+			return new Float32Array([ this.map_width(), this.map_height() ])
+		}
+
+		@ $mol_mem
 		ceil_pos() {
 			return new Float32Array([ this.map_width() / 2, 1, this.map_height() / 2 ])
 		}
