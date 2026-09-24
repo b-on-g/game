@@ -1287,7 +1287,7 @@ declare namespace $ {
      * Theme css variables
      * @see https://mol.hyoo.ru/#!section=demos/demo=mol_textarea_demo
      */
-    const $mol_theme: Record<"image" | "line" | "text" | "focus" | "hue" | "back" | "hover" | "card" | "current" | "special" | "control" | "shade" | "field" | "spirit" | "hue_spread", $mol_style_func<"var", unknown>>;
+    const $mol_theme: Record<"image" | "line" | "text" | "field" | "focus" | "hue" | "back" | "hover" | "card" | "current" | "special" | "control" | "shade" | "spirit" | "hue_spread", $mol_style_func<"var", unknown>>;
 }
 
 declare namespace $ {
@@ -1822,74 +1822,16 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-    let $mol_3d_glsl_both: string;
-    let $mol_3d_glsl_vert: string;
-    let $mol_3d_glsl_frag: string;
-}
-
-declare namespace $ {
-    class $mol_3d_mat4 extends Float32Array {
-        static identity(): $mol_3d_mat4;
-        static translation([x, y, z]: Float32List): $mol_3d_mat4;
-        static scaling([x, y, z]: Float32List): $mol_3d_mat4;
-        static rotation([x, y, z]: Float32List, angle: number): $mol_3d_mat4;
-        static orthographic(left: number, right: number, bottom: number, top: number, near: number, far: number): $mol_3d_mat4;
-        static perspective(fov: number, aspect: number, near: number, far: number): $mol_3d_mat4;
-        static multiply(head: Float32List, ...tail: Float32List[]): $mol_3d_mat4;
-        inversed(): $mol_3d_mat4;
-    }
-}
-
-declare namespace $ { }
-
-declare namespace $ {
-    type $bog_gamengine_prop = {
-        name: string;
-        kind: 'vec2' | 'vec3' | 'vec4' | 'number' | 'flag' | 'text' | 'frame' | 'euler';
-        get: () => unknown;
-        set: (next: unknown) => void;
-    };
-    function $bog_gamengine_node_vec(next: ArrayLike<number>): Float32Array<ArrayBufferLike>;
-    class $bog_gamengine_node extends $mol_object2 {
-        name(next?: string): string;
-        title(): string;
-        props(): readonly $bog_gamengine_prop[];
-        pos(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
-        rot(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
-        scale(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
-        tint(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
-        parent(next?: $bog_gamengine_node | null): $bog_gamengine_node | null;
-        kids(next?: readonly $bog_gamengine_node[]): readonly $bog_gamengine_node[];
-        trans(): $mol_3d_mat4;
-        world(): $mol_3d_mat4;
-        step(dt: number): void;
-    }
-}
-
-declare namespace $ {
-    class $bog_gamengine_clock extends $mol_object2 {
-        frames: number;
-        now_last: number;
-        dt_raw: number;
-        time_total: number;
-        time_frame: number;
-        tick_at: number;
-        frame(): number;
-        dt(): number;
-        time(): number;
-        paused(next?: boolean): boolean;
-        speed(next?: number): number;
-    }
-}
-
-declare namespace $ {
     type $bog_gamengine_gl_type = 'mat4' | 'mat3' | 'mat2' | 'vec4' | 'vec3' | 'vec2' | 'ivec4' | 'ivec3' | 'ivec2' | 'uvec4' | 'uvec3' | 'uvec2' | 'float' | 'int' | 'uint' | 'sampler2D' | 'sampler2DShadow' | 'sampler2DArray' | 'sampler2DArrayShadow' | 'samplerCube' | 'samplerCubeShadow' | 'sampler3D';
+    type $bog_gamengine_gl_type_array = `${$bog_gamengine_gl_type}[${number}]`;
     type $bog_gamengine_gl_face = {
-        glob?: Record<string, $bog_gamengine_gl_type>;
+        glob?: Record<string, $bog_gamengine_gl_type | $bog_gamengine_gl_type_array>;
         input?: Record<string, $bog_gamengine_gl_type>;
         pipe?: Record<string, $bog_gamengine_gl_type>;
         output?: Record<string, $bog_gamengine_gl_type>;
     };
+    function $bog_gamengine_gl_decl(kind: string, type: string, name: string): string;
+    function $bog_gamengine_gl_slots(type: $bog_gamengine_gl_type): 1 | 2 | 3 | 4;
     function $bog_gamengine_gl_source(face: $bog_gamengine_gl_face, vert: string, frag: string): {
         vert: string;
         frag: string;
@@ -1911,9 +1853,37 @@ declare namespace $ {
         reserve(bytes: number): number;
     }
     function $bog_gamengine_gl_texture_array(gl: WebGL2RenderingContext, images: readonly TexImageSource[], size: number): WebGLTexture;
+    class $bog_gamengine_gl_depth_target extends Object {
+        readonly gl: WebGL2RenderingContext;
+        readonly size: number;
+        readonly native: WebGLFramebuffer;
+        readonly texture: WebGLTexture;
+        constructor(gl: WebGL2RenderingContext, size: number);
+        dispose(): this;
+    }
+    class $bog_gamengine_gl_color_target extends Object {
+        readonly gl: WebGL2RenderingContext;
+        native: WebGLFramebuffer | null;
+        texture: WebGLTexture | null;
+        depth: WebGLRenderbuffer | null;
+        width: number;
+        height: number;
+        readonly float: boolean;
+        constructor(gl: WebGL2RenderingContext, width: number, height: number);
+        attach(width: number, height: number): this;
+        resize(width: number, height: number): this;
+        dispose(): this;
+    }
     function $bog_gamengine_gl_uniform_matrix(gl: WebGL2RenderingContext, location: WebGLUniformLocation | null, data: Float32Array): Float32Array<ArrayBufferLike>;
     function $bog_gamengine_gl_uniform_vector(gl: WebGL2RenderingContext, location: WebGLUniformLocation | null, data: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_gl_uniform_vec4s(gl: WebGL2RenderingContext, location: WebGLUniformLocation | null, data: Float32Array): Float32Array<ArrayBufferLike>;
     function $bog_gamengine_gl_uniform_int(gl: WebGL2RenderingContext, location: WebGLUniformLocation | null, value: number): number;
+}
+
+declare namespace $ {
+    let $mol_3d_glsl_both: string;
+    let $mol_3d_glsl_vert: string;
+    let $mol_3d_glsl_frag: string;
 }
 
 declare namespace $ {
@@ -1928,251 +1898,6 @@ declare namespace $ {
             frag: string;
         };
         program(gl: WebGL2RenderingContext): $bog_gamengine_gl_program<ReturnType<this['face']>>;
-    }
-}
-
-declare namespace $ {
-    class $bog_gamengine_shader_flat extends $bog_gamengine_shader {
-        face(): {
-            readonly glob: {
-                readonly proj: "mat4";
-                readonly view: "mat4";
-            };
-            readonly input: {
-                readonly vertex: "vec3";
-                readonly inst_trans: "mat4";
-                readonly inst_tint: "vec4";
-            };
-            readonly pipe: {
-                readonly pipe_tint: "vec4";
-            };
-            readonly output: {
-                readonly color: "vec4";
-            };
-        };
-        vert(): string;
-        frag(): string;
-    }
-}
-
-declare namespace $ {
-    class $mol_3d_shape extends $mol_object {
-        geometry(): Float32Array<ArrayBuffer>;
-        size(): number;
-        skin(): Float32Array<ArrayBuffer>;
-    }
-    class $mol_3d_shape_triangle extends $mol_3d_shape {
-        geometry(): Float32Array<ArrayBuffer>;
-        skin(): Float32Array<ArrayBuffer>;
-    }
-    class $mol_3d_shape_square extends $mol_3d_shape {
-        geometry(): Float32Array<ArrayBuffer>;
-        skin(): Float32Array<ArrayBuffer>;
-    }
-}
-
-declare namespace $ {
-    class $bog_gamengine_shape extends $mol_3d_shape {
-        normals(): Float32Array<ArrayBuffer>;
-        count(): number;
-        mode(): 'strip' | 'triangles' | 'lines';
-    }
-}
-
-declare namespace $ {
-    class $bog_gamengine_shape_quad extends $bog_gamengine_shape {
-        geometry(): Float32Array<ArrayBuffer>;
-        skin(): Float32Array<ArrayBuffer>;
-    }
-}
-
-declare namespace $ {
-    class $mol_3d_image extends $mol_object {
-        uri(): string;
-        load(): Promise<HTMLImageElement>;
-        data(): HTMLImageElement | ImageData;
-    }
-}
-
-declare namespace $ {
-    /** Starts subtasks concurrently instead of serial. */
-    function $mol_wire_race<Tasks extends ((...args: any) => any)[]>(...tasks: Tasks): {
-        [index in keyof Tasks]: ReturnType<Tasks[index]>;
-    };
-}
-
-declare namespace $ {
-    class $bog_gamengine_atlas extends $mol_object2 {
-        uris(next?: readonly string[]): readonly string[];
-        size(next?: number): number;
-        names(): Map<string, number>;
-        layer(name: string): number;
-        image(uri: string): $mol_3d_image;
-        images(): (HTMLImageElement | ImageData)[];
-        ready(): boolean;
-    }
-}
-
-declare namespace $ {
-    type $bog_gamengine_batch_node = $bog_gamengine_node & {
-        tint?(): Float32Array;
-        layer?(): number;
-        uv?(): Float32Array;
-    };
-    type $bog_gamengine_batch_source = {
-        trans: Float32Array;
-        count: number;
-    };
-    class $bog_gamengine_batch extends $mol_object2 {
-        shader(next?: $bog_gamengine_shader): $bog_gamengine_shader | $bog_gamengine_shader_flat;
-        shape(next?: $bog_gamengine_shape): $bog_gamengine_shape;
-        atlas(next?: $bog_gamengine_atlas | null): $bog_gamengine_atlas | null;
-        nodes(next?: readonly $bog_gamengine_batch_node[]): readonly $bog_gamengine_batch_node[];
-        source(next?: $bog_gamengine_batch_source | null): $bog_gamengine_batch_source | null;
-        cap: number;
-        count: number;
-        version: number;
-        trans: Float32Array<ArrayBuffer>;
-        tint: Float32Array<ArrayBuffer>;
-        layer: Float32Array<ArrayBuffer>;
-        uv: Float32Array<ArrayBuffer>;
-        grow(need: number): void;
-        fill(): number;
-        fill_source(source: $bog_gamengine_batch_source): number;
-    }
-}
-
-declare namespace $ {
-    class $bog_gamengine_phys_body extends $bog_gamengine_node {
-        vel(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
-        size(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
-        kind(next?: 'aabb' | 'circle'): "circle" | "aabb";
-        still(next?: boolean): boolean;
-        ghost(next?: boolean): boolean;
-        props(): readonly $bog_gamengine_prop[];
-        hit(other: $bog_gamengine_phys_body | null): void;
-    }
-}
-
-declare namespace $ {
-    class $bog_gamengine_phys_tile extends $mol_object2 {
-        map(next?: string): string;
-        solid(next?: string): string;
-        rows(): readonly (readonly string[])[];
-        width(): number;
-        height(): number;
-        cell(x: number, y: number): boolean;
-        solid_at(wx: number, wy: number): boolean;
-    }
-}
-
-declare namespace $ {
-    class $bog_gamengine_phys extends $mol_object2 {
-        bodies(next?: readonly $bog_gamengine_phys_body[]): readonly $bog_gamengine_phys_body[];
-        tile(next?: $bog_gamengine_phys_tile | null): $bog_gamengine_phys_tile | null;
-        eps: number;
-        step(dt: number): void;
-        move(body: $bog_gamengine_phys_body, tile: $bog_gamengine_phys_tile | null, dt: number): void;
-        col_solid(tile: $bog_gamengine_phys_tile, cx: number, cy0: number, cy1: number): boolean;
-        row_solid(tile: $bog_gamengine_phys_tile, cy: number, cx0: number, cx1: number): boolean;
-        touch(a: $bog_gamengine_phys_body, b: $bog_gamengine_phys_body): void;
-        push(a: $bog_gamengine_phys_body, b: $bog_gamengine_phys_body, px: number, py: number): void;
-        shift(body: $bog_gamengine_phys_body, sx: number, sy: number, stop: boolean): void;
-    }
-}
-
-declare namespace $ {
-    type $bog_gamengine_phys3_broad_world = {
-        count: number;
-        aabb: Float32Array;
-        inv_mass: Float32Array;
-        flags: Uint8Array;
-        shape: Uint8Array;
-    };
-    class $bog_gamengine_phys3_broad extends $mol_object2 {
-        static shape_plane: number;
-        static flag_sleep: number;
-        pairs: Uint32Array<ArrayBuffer>;
-        pair_count: number;
-        order: Uint32Array<ArrayBuffer>;
-        order_len: number;
-        find(world: $bog_gamengine_phys3_broad_world): number;
-        order_sync(count: number): void;
-        order_sort(aabb: Float32Array): void;
-        sweep(world: $bog_gamengine_phys3_broad_world): void;
-        planes(world: $bog_gamengine_phys3_broad_world): void;
-        push(i: number, j: number): void;
-    }
-}
-
-declare namespace $ {
-    function $bog_gamengine_vec_add(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_sub(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_scale(out: Float32Array, a: Float32Array, k: number): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_len(a: Float32Array): number;
-    function $bog_gamengine_vec_norm(out: Float32Array, a: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_dot(a: Float32Array, b: Float32Array): number;
-    function $bog_gamengine_vec_cross(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_lerp(out: Float32Array, a: Float32Array, b: Float32Array, t: number): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_mat4_apply(out: Float32Array, m: Float32List, v: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_identity(out: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_mul(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_from_axis(out: Float32Array, axis: Float32Array, angle: number): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_from_euler(out: Float32Array, x: number, y: number, z: number): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_normalize(out: Float32Array, q: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_rotate(out: Float32Array, q: Float32Array, v: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_integrate(out: Float32Array, q: Float32Array, ang: Float32Array, dt: number): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_to_mat4(out: Float32Array, q: Float32Array, pos: Float32Array, scale: Float32Array): Float32Array<ArrayBufferLike>;
-    function $bog_gamengine_vec_quat_to_euler(out: Float32Array, q: Float32Array): Float32Array<ArrayBufferLike>;
-}
-
-declare namespace $ {
-    class $bog_gamengine_phys3 extends $mol_object2 {
-        static shape_sphere: number;
-        static shape_box: number;
-        static shape_capsule: number;
-        static shape_plane: number;
-        static shape_hull: number;
-        static flag_sleep: number;
-        static flag_ghost: number;
-        cap: number;
-        count: number;
-        pos: Float32Array<ArrayBuffer>;
-        rot: Float32Array<ArrayBuffer>;
-        vel: Float32Array<ArrayBuffer>;
-        ang: Float32Array<ArrayBuffer>;
-        mass: Float32Array<ArrayBuffer>;
-        inv_mass: Float32Array<ArrayBuffer>;
-        inv_inertia: Float32Array<ArrayBuffer>;
-        shape: Uint8Array<ArrayBuffer>;
-        size: Float32Array<ArrayBuffer>;
-        flags: Uint8Array<ArrayBuffer>;
-        trans: Float32Array<ArrayBuffer>;
-        aabb: Float32Array<ArrayBuffer>;
-        hull_off: Uint32Array<ArrayBuffer>;
-        hull_count: Uint32Array<ArrayBuffer>;
-        hull: Float32Array<ArrayBuffer>;
-        hull_len: number;
-        pos_view: Float32Array[];
-        rot_view: Float32Array[];
-        ang_view: Float32Array[];
-        trans_view: Float32Array[];
-        tmp_scale: Float32Array<ArrayBuffer>;
-        tmp_point: Float32Array<ArrayBuffer>;
-        broad: $bog_gamengine_phys3_broad;
-        gravity(next?: Float32Array): Float32Array<ArrayBufferLike>;
-        grow(need: number): void;
-        views(buf: Float32Array, stride: number): Float32Array<ArrayBufferLike>[];
-        grow_f32(prev: Float32Array, len: number): Float32Array<ArrayBuffer>;
-        add(shape: number, size: Float32Array, mass: number, pos: Float32Array, rot?: Float32Array): number;
-        mass_set(i: number, mass: number): void;
-        remove(index: number): number;
-        hull_points(index: number, points: Float32Array): void;
-        scale_of(i: number): Float32Array<ArrayBuffer>;
-        trans_write(i: number): void;
-        step(dt: number): void;
-        bounds(): void;
-        bounds_of(i: number): void;
     }
 }
 
@@ -2210,32 +1935,201 @@ declare namespace $ {
 }
 
 declare namespace $ {
-    class $bog_gamengine_input extends $mol_object2 {
-        key(next?: $bog_gamengine_key | null): $bog_gamengine_key | null;
-        pad(next?: $bog_gamengine_pad | null): $bog_gamengine_pad | null;
-        poll(): void;
-        action(name: string): boolean;
-        axis(neg: string, pos: string): number;
+    /**
+     * Z-index values for layers
+     * https://page.hyoo.ru/#!=xthcpx_wqmiba
+     */
+    let $mol_layer: Record<"focus" | "float" | "hover" | "speck" | "popup", $mol_style_func<"var", unknown>>;
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+}
+
+declare namespace $ {
+
+	export class $mol_speck extends $mol_view {
+		value( ): any
+		theme( ): string
+		sub( ): readonly(any)[]
+	}
+	
+}
+
+//# sourceMappingURL=speck.view.tree.d.ts.map
+declare namespace $ {
+    /**
+    * Key names code for hotkey
+    * @see [mol_hotkey](../../hotkey/hotkey.view.ts)
+    */
+    enum $mol_keyboard_code {
+        backspace = 8,
+        tab = 9,
+        enter = 13,
+        shift = 16,
+        ctrl = 17,
+        alt = 18,
+        pause = 19,
+        capsLock = 20,
+        escape = 27,
+        space = 32,
+        pageUp = 33,
+        pageDown = 34,
+        end = 35,
+        home = 36,
+        left = 37,
+        up = 38,
+        right = 39,
+        down = 40,
+        insert = 45,
+        delete = 46,
+        key0 = 48,
+        key1 = 49,
+        key2 = 50,
+        key3 = 51,
+        key4 = 52,
+        key5 = 53,
+        key6 = 54,
+        key7 = 55,
+        key8 = 56,
+        key9 = 57,
+        A = 65,
+        B = 66,
+        C = 67,
+        D = 68,
+        E = 69,
+        F = 70,
+        G = 71,
+        H = 72,
+        I = 73,
+        J = 74,
+        K = 75,
+        L = 76,
+        M = 77,
+        N = 78,
+        O = 79,
+        P = 80,
+        Q = 81,
+        R = 82,
+        S = 83,
+        T = 84,
+        U = 85,
+        V = 86,
+        W = 87,
+        X = 88,
+        Y = 89,
+        Z = 90,
+        metaLeft = 91,
+        metaRight = 92,
+        select = 93,
+        numpad0 = 96,
+        numpad1 = 97,
+        numpad2 = 98,
+        numpad3 = 99,
+        numpad4 = 100,
+        numpad5 = 101,
+        numpad6 = 102,
+        numpad7 = 103,
+        numpad8 = 104,
+        numpad9 = 105,
+        multiply = 106,
+        add = 107,
+        subtract = 109,
+        decimal = 110,
+        divide = 111,
+        F1 = 112,
+        F2 = 113,
+        F3 = 114,
+        F4 = 115,
+        F5 = 116,
+        F6 = 117,
+        F7 = 118,
+        F8 = 119,
+        F9 = 120,
+        F10 = 121,
+        F11 = 122,
+        F12 = 123,
+        numLock = 144,
+        scrollLock = 145,
+        semicolon = 186,
+        equals = 187,
+        comma = 188,
+        dash = 189,
+        period = 190,
+        forwardSlash = 191,
+        graveAccent = 192,
+        bracketOpen = 219,
+        slashBack = 220,
+        slashBackLeft = 226,
+        bracketClose = 221,
+        quoteSingle = 222
     }
 }
 
 declare namespace $ {
-    class $bog_gamengine_scene extends $bog_gamengine_node {
-        clock(next?: $bog_gamengine_clock): $bog_gamengine_clock;
-        nodes(): readonly $bog_gamengine_node[];
-        batches(next?: readonly $bog_gamengine_batch[]): readonly $bog_gamengine_batch[];
-        phys(next?: $bog_gamengine_phys | null): $bog_gamengine_phys | null;
-        phys3(next?: $bog_gamengine_phys3 | null): $bog_gamengine_phys3 | null;
-        input(next?: $bog_gamengine_input | null): $bog_gamengine_input | null;
-        frame_done: number;
-        step(): number;
+
+	type $mol_speck__value_mol_button_1 = $mol_type_enforce<
+		ReturnType< $mol_button['error'] >
+		,
+		ReturnType< $mol_speck['value'] >
+	>
+	export class $mol_button extends $mol_view {
+		event_activate( next?: any ): any
+		activate( next?: ReturnType< $mol_button['event_activate'] > ): ReturnType< $mol_button['event_activate'] >
+		clicks( next?: any ): any
+		event_key_press( next?: any ): any
+		key_press( next?: ReturnType< $mol_button['event_key_press'] > ): ReturnType< $mol_button['event_key_press'] >
+		disabled( ): boolean
+		tab_index( ): number
+		hint( ): string
+		hint_safe( ): ReturnType< $mol_button['hint'] >
+		error( ): string
+		enabled( ): boolean
+		click( next?: any ): any
+		event_click( next?: any ): any
+		status( next?: readonly(any)[] ): readonly(any)[]
+		event( ): ({ 
+			click( next?: ReturnType< $mol_button['activate'] > ): ReturnType< $mol_button['activate'] >,
+			dblclick( next?: ReturnType< $mol_button['clicks'] > ): ReturnType< $mol_button['clicks'] >,
+			keydown( next?: ReturnType< $mol_button['key_press'] > ): ReturnType< $mol_button['key_press'] >,
+		})  & ReturnType< $mol_view['event'] >
+		attr( ): ({ 
+			'disabled': ReturnType< $mol_button['disabled'] >,
+			'role': string,
+			'tabindex': ReturnType< $mol_button['tab_index'] >,
+			'title': ReturnType< $mol_button['hint_safe'] >,
+		})  & ReturnType< $mol_view['attr'] >
+		sub( ): readonly($mol_view_content)[]
+		Speck( ): $mol_speck
+	}
+	
+}
+
+//# sourceMappingURL=button.view.tree.d.ts.map
+declare namespace $.$$ {
+    /**
+     * Simple button.
+     * @see https://mol.hyoo.ru/#!section=demos/demo=mol_button_demo
+     */
+    class $mol_button extends $.$mol_button {
+        disabled(): boolean;
+        event_activate(next: Event): void;
+        event_key_press(event: KeyboardEvent): any;
+        tab_index(): number;
+        error(): string;
+        hint_safe(): string;
+        sub_visible(): ($mol_view_content | $mol_speck)[];
     }
 }
 
 declare namespace $ {
-    class $bog_gamengine_cam extends $bog_gamengine_node {
-        view(): $mol_3d_mat4;
-        proj(aspect: number): $mol_3d_mat4;
+}
+
+declare namespace $ {
+    class $mol_media extends $mol_object2 {
+        static match(query: string, next?: boolean): boolean;
     }
 }
 
@@ -2290,6 +2184,1214 @@ declare namespace $ {
 }
 
 declare namespace $ {
+    interface $bog_gamengine_input_screen {
+        action(name: string): boolean;
+        axis(neg: string, pos: string): number;
+        move(dx: number, dy: number): void;
+        press(name: string): void;
+        release(name: string): void;
+    }
+}
+
+declare namespace $ {
+
+	type $mol_view__style_bog_gamengine_input_screen_1 = $mol_type_enforce<
+		({ 
+			'transform': ReturnType< $bog_gamengine_input_screen['knob_shift'] >,
+		}) 
+		,
+		ReturnType< $mol_view['style'] >
+	>
+	type $mol_view__event_bog_gamengine_input_screen_2 = $mol_type_enforce<
+		({ 
+			pointerdown( next?: ReturnType< $bog_gamengine_input_screen['stick_down'] > ): ReturnType< $bog_gamengine_input_screen['stick_down'] >,
+			pointermove( next?: ReturnType< $bog_gamengine_input_screen['stick_move'] > ): ReturnType< $bog_gamengine_input_screen['stick_move'] >,
+			pointerup( next?: ReturnType< $bog_gamengine_input_screen['stick_up'] > ): ReturnType< $bog_gamengine_input_screen['stick_up'] >,
+			pointercancel( next?: ReturnType< $bog_gamengine_input_screen['stick_cancel'] > ): ReturnType< $bog_gamengine_input_screen['stick_cancel'] >,
+			pointerleave( next?: ReturnType< $bog_gamengine_input_screen['stick_leave'] > ): ReturnType< $bog_gamengine_input_screen['stick_leave'] >,
+		}) 
+		,
+		ReturnType< $mol_view['event'] >
+	>
+	type $mol_view__sub_bog_gamengine_input_screen_3 = $mol_type_enforce<
+		readonly(any)[]
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_view__sub_bog_gamengine_input_screen_4 = $mol_type_enforce<
+		ReturnType< $bog_gamengine_input_screen['buttons'] >
+		,
+		ReturnType< $mol_view['sub'] >
+	>
+	type $mol_button__title_bog_gamengine_input_screen_5 = $mol_type_enforce<
+		ReturnType< $bog_gamengine_input_screen['button_title'] >
+		,
+		ReturnType< $mol_button['title'] >
+	>
+	type $mol_button__event_bog_gamengine_input_screen_6 = $mol_type_enforce<
+		({ 
+			pointerdown( next?: ReturnType< $bog_gamengine_input_screen['button_down'] > ): ReturnType< $bog_gamengine_input_screen['button_down'] >,
+			pointerup( next?: ReturnType< $bog_gamengine_input_screen['button_up'] > ): ReturnType< $bog_gamengine_input_screen['button_up'] >,
+			pointercancel( next?: ReturnType< $bog_gamengine_input_screen['button_cancel'] > ): ReturnType< $bog_gamengine_input_screen['button_cancel'] >,
+			pointerleave( next?: ReturnType< $bog_gamengine_input_screen['button_leave'] > ): ReturnType< $bog_gamengine_input_screen['button_leave'] >,
+		})  & ReturnType< $mol_button['event'] >
+		,
+		ReturnType< $mol_button['event'] >
+	>
+	export class $bog_gamengine_input_screen extends $mol_view {
+		stick_down( next?: any ): any
+		stick_move( next?: any ): any
+		stick_up( next?: any ): any
+		stick_cancel( next?: any ): any
+		stick_leave( next?: any ): any
+		Knob( ): $mol_view
+		Stick( ): $mol_view
+		buttons( ): readonly(any)[]
+		Buttons( ): $mol_view
+		button_title( id: any): string
+		button_down( id: any, next?: any ): any
+		button_up( id: any, next?: any ): any
+		button_cancel( id: any, next?: any ): any
+		button_leave( id: any, next?: any ): any
+		shown( next?: boolean ): boolean
+		actions( ): readonly(string)[]
+		titles( ): Record<string, any>
+		bind( ): Record<string, any>
+		dead( ): number
+		radius( ): number
+		knob_shift( next?: string ): string
+		sub( ): readonly(any)[]
+		Button( id: any): $mol_button
+	}
+	
+}
+
+//# sourceMappingURL=screen.view.tree.d.ts.map
+declare namespace $.$$ {
+    class $bog_gamengine_input_screen extends $.$bog_gamengine_input_screen {
+        stick: Float32Array<ArrayBuffer>;
+        held: Map<string, boolean>;
+        stick_pointer: number;
+        bind(): Record<string, readonly string[]>;
+        coarse(): boolean;
+        visible(): boolean;
+        sub(): readonly any[];
+        buttons(): $.$mol_button[];
+        button_title(name: string): any;
+        value(name: string): number;
+        strength(name: string): number;
+        action(name: string): boolean;
+        axis(neg: string, pos: string): number;
+        move(dx: number, dy: number): void;
+        press(name: string): void;
+        release(name: string): void;
+        stick_track(event: PointerEvent): void;
+        stick_down(event?: PointerEvent | null): PointerEvent | null;
+        stick_move(event?: PointerEvent | null): PointerEvent | null;
+        stick_up(event?: PointerEvent | null): PointerEvent | null;
+        stick_cancel(event?: PointerEvent | null): PointerEvent | null;
+        stick_leave(event?: PointerEvent | null): PointerEvent | null;
+        button_down(name: string, event?: PointerEvent | null): PointerEvent | null;
+        button_up(name: string, event?: PointerEvent | null): PointerEvent | null;
+        button_cancel(name: string, event?: PointerEvent | null): PointerEvent | null;
+        button_leave(name: string, event?: PointerEvent | null): PointerEvent | null;
+    }
+}
+
+declare namespace $.$$ {
+}
+
+declare namespace $ {
+    class $bog_gamengine_input extends $mol_object2 {
+        key(next?: $bog_gamengine_key | null): $bog_gamengine_key | null;
+        pad(next?: $bog_gamengine_pad | null): $bog_gamengine_pad | null;
+        screen(next?: $bog_gamengine_input_screen | null): $bog_gamengine_input_screen | null;
+        poll(): void;
+        action(name: string): boolean;
+        axis(neg: string, pos: string): number;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_clock extends $mol_object2 {
+        frames: number;
+        now_last: number;
+        dt_raw: number;
+        time_total: number;
+        time_frame: number;
+        tick_at: number;
+        frame(): number;
+        dt(): number;
+        time(next?: number): number;
+        paused(next?: boolean): boolean;
+        speed(next?: number): number;
+    }
+}
+
+declare namespace $ {
+    class $mol_3d_mat4 extends Float32Array {
+        static identity(): $mol_3d_mat4;
+        static translation([x, y, z]: Float32List): $mol_3d_mat4;
+        static scaling([x, y, z]: Float32List): $mol_3d_mat4;
+        static rotation([x, y, z]: Float32List, angle: number): $mol_3d_mat4;
+        static orthographic(left: number, right: number, bottom: number, top: number, near: number, far: number): $mol_3d_mat4;
+        static perspective(fov: number, aspect: number, near: number, far: number): $mol_3d_mat4;
+        static multiply(head: Float32List, ...tail: Float32List[]): $mol_3d_mat4;
+        inversed(): $mol_3d_mat4;
+    }
+}
+
+declare namespace $ { }
+
+declare namespace $ {
+    type $bog_gamengine_prop_kind = 'vec2' | 'vec3' | 'vec4' | 'number' | 'flag' | 'text' | 'frame' | 'euler' | 'list';
+    type $bog_gamengine_prop = {
+        name: string;
+        kind: $bog_gamengine_prop_kind;
+        fields?: Readonly<Record<string, $bog_gamengine_prop_kind>>;
+        get: () => unknown;
+        set: (next: unknown) => void;
+    };
+    function $bog_gamengine_node_vec(next: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+    class $bog_gamengine_node extends $mol_object2 {
+        name(next?: string): string;
+        title(): string;
+        props(): readonly $bog_gamengine_prop[];
+        pos(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        rot(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        scale(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        tint(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        billboard(next?: boolean): boolean;
+        shader(next?: $bog_gamengine_shader | null): $bog_gamengine_shader | null;
+        parent(next?: $bog_gamengine_node | null): $bog_gamengine_node | null;
+        kids(next?: readonly $bog_gamengine_node[]): readonly $bog_gamengine_node[];
+        root(): $bog_gamengine_node;
+        is_scene(): boolean;
+        is_brain(): boolean;
+        scene(): $bog_gamengine_scene | null;
+        input(): $bog_gamengine_input | null;
+        clock(): $bog_gamengine_clock | null;
+        cam_yaw(): number;
+        trans(): $mol_3d_mat4;
+        world(): $mol_3d_mat4;
+        step(dt: number): void;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_light extends $bog_gamengine_node {
+        kind(next?: string): string;
+        color(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        power(next?: number): number;
+        range(next?: number): number;
+        angle(next?: number): number;
+        props(): readonly $bog_gamengine_prop[];
+        dir(): Float32Array<ArrayBufferLike>;
+    }
+    function $bog_gamengine_light_dir(world: Float32Array, out: Float32Array, offset: number): Float32Array<ArrayBufferLike>;
+}
+
+declare namespace $ {
+    class $bog_gamengine_shader_sprite extends $bog_gamengine_shader {
+        face(): {
+            readonly glob: {
+                readonly proj: "mat4";
+                readonly view: "mat4";
+                readonly atlas: "sampler2DArray";
+            };
+            readonly input: {
+                readonly vertex: "vec3";
+                readonly uv: "vec2";
+                readonly inst_trans: "mat4";
+                readonly inst_tint: "vec4";
+                readonly inst_layer: "float";
+                readonly inst_uv: "vec4";
+            };
+            readonly pipe: {
+                readonly pipe_uv: "vec2";
+                readonly pipe_layer: "float";
+                readonly pipe_tint: "vec4";
+            };
+            readonly output: {
+                readonly color: "vec4";
+            };
+        };
+        vert(): string;
+        frag(): string;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_shader_solid extends $bog_gamengine_shader {
+        face(): {
+            readonly glob: {
+                readonly proj: "mat4";
+                readonly view: "mat4";
+                readonly atlas: "sampler2DArray";
+                readonly light_count: "int";
+                readonly light_pos: "vec4[8]";
+                readonly light_dir: "vec4[8]";
+                readonly light_color: "vec4[8]";
+                readonly ambient: "vec3";
+                readonly cam_pos: "vec3";
+                readonly fog: "vec2";
+                readonly fog_color: "vec3";
+                readonly wireframe: "float";
+                readonly shadow_mat: "mat4";
+                readonly shadow_map: "sampler2DShadow";
+                readonly shadow_light: "int";
+            };
+            readonly input: {
+                readonly vertex: "vec3";
+                readonly uv: "vec2";
+                readonly normal: "vec3";
+                readonly inst_trans: "mat4";
+                readonly inst_tint: "vec4";
+                readonly inst_layer: "float";
+                readonly inst_uv: "vec4";
+                readonly inst_material: "vec4";
+                readonly inst_normal_layer: "float";
+            };
+            readonly pipe: {
+                readonly pipe_uv: "vec2";
+                readonly pipe_layer: "float";
+                readonly pipe_tint: "vec4";
+                readonly pipe_normal: "vec3";
+                readonly pipe_pos: "vec3";
+                readonly pipe_material: "vec4";
+                readonly pipe_normal_layer: "float";
+            };
+            readonly output: {
+                readonly color: "vec4";
+            };
+        };
+        depth(): boolean;
+        vert(): string;
+        frag(): string;
+    }
+}
+
+declare namespace $ { }
+
+declare namespace $ {
+    class $bog_gamengine_shader_solid_plain extends $bog_gamengine_shader {
+        face(): {
+            readonly glob: {
+                readonly proj: "mat4";
+                readonly view: "mat4";
+                readonly light_count: "int";
+                readonly light_pos: "vec4[8]";
+                readonly light_dir: "vec4[8]";
+                readonly light_color: "vec4[8]";
+                readonly ambient: "vec3";
+                readonly cam_pos: "vec3";
+                readonly fog: "vec2";
+                readonly fog_color: "vec3";
+                readonly wireframe: "float";
+            };
+            readonly input: {
+                readonly vertex: "vec3";
+                readonly normal: "vec3";
+                readonly inst_trans: "mat4";
+                readonly inst_tint: "vec4";
+                readonly inst_material: "vec4";
+            };
+            readonly pipe: {
+                readonly pipe_tint: "vec4";
+                readonly pipe_normal: "vec3";
+                readonly pipe_pos: "vec3";
+                readonly pipe_material: "vec4";
+            };
+            readonly output: {
+                readonly color: "vec4";
+            };
+        };
+        depth(): boolean;
+        vert(): string;
+        frag(): string;
+    }
+}
+
+declare namespace $ {
+    class $mol_3d_shape extends $mol_object {
+        geometry(): Float32Array<ArrayBuffer>;
+        size(): number;
+        skin(): Float32Array<ArrayBuffer>;
+    }
+    class $mol_3d_shape_triangle extends $mol_3d_shape {
+        geometry(): Float32Array<ArrayBuffer>;
+        skin(): Float32Array<ArrayBuffer>;
+    }
+    class $mol_3d_shape_square extends $mol_3d_shape {
+        geometry(): Float32Array<ArrayBuffer>;
+        skin(): Float32Array<ArrayBuffer>;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_shape extends $mol_3d_shape {
+        normals(): Float32Array<ArrayBuffer>;
+        radius(): number;
+        count(): number;
+        mode(): 'strip' | 'triangles' | 'lines';
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_shape_quad extends $bog_gamengine_shape {
+        geometry(): Float32Array<ArrayBuffer>;
+        skin(): Float32Array<ArrayBuffer>;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_shader_flat extends $bog_gamengine_shader {
+        face(): {
+            readonly glob: {
+                readonly proj: "mat4";
+                readonly view: "mat4";
+            };
+            readonly input: {
+                readonly vertex: "vec3";
+                readonly inst_trans: "mat4";
+                readonly inst_tint: "vec4";
+            };
+            readonly pipe: {
+                readonly pipe_tint: "vec4";
+            };
+            readonly output: {
+                readonly color: "vec4";
+            };
+        };
+        vert(): string;
+        frag(): string;
+    }
+}
+
+declare namespace $ {
+    class $mol_3d_image extends $mol_object {
+        uri(): string;
+        load(): Promise<HTMLImageElement>;
+        data(): HTMLImageElement | ImageData;
+    }
+}
+
+declare namespace $ {
+    /** Starts subtasks concurrently instead of serial. */
+    function $mol_wire_race<Tasks extends ((...args: any) => any)[]>(...tasks: Tasks): {
+        [index in keyof Tasks]: ReturnType<Tasks[index]>;
+    };
+}
+
+declare namespace $ {
+    type $bog_gamengine_atlas_source = {
+        name: string;
+        image: TexImageSource;
+    };
+    class $bog_gamengine_atlas_image extends $mol_3d_image {
+        data(): HTMLImageElement | ImageData;
+    }
+    function $bog_gamengine_atlas_blank(image: TexImageSource): boolean;
+    class $bog_gamengine_atlas extends $mol_object2 {
+        uris(next?: readonly string[]): readonly string[];
+        size(next?: number): number;
+        sources(next?: readonly $bog_gamengine_atlas_source[]): readonly $bog_gamengine_atlas_source[];
+        origins(): readonly {
+            name: string;
+            from: string;
+        }[];
+        names(): Map<string, number>;
+        layer(name: string): number;
+        static image(uri: string): $bog_gamengine_atlas_image;
+        image(uri: string): $bog_gamengine_atlas_image;
+        images(): readonly TexImageSource[];
+        ready(): boolean;
+    }
+}
+
+declare namespace $ {
+    function $bog_gamengine_cam_frustum_sphere(frustum: Float32Array, x: number, y: number, z: number, radius: number): boolean;
+    function $bog_gamengine_cam_frustum_aabb(frustum: Float32Array, aabb: Float32Array, at: number): boolean;
+    class $bog_gamengine_cam extends $bog_gamengine_node {
+        aspect(next?: number): number;
+        view(): $mol_3d_mat4;
+        proj(aspect: number): $mol_3d_mat4;
+        clip: Float32Array<ArrayBuffer>;
+        frustum(aspect: number, out: Float32Array): Float32Array<ArrayBufferLike>;
+    }
+}
+
+declare namespace $ {
+    type $bog_gamengine_batch_node = $bog_gamengine_node & {
+        tint?(): Float32Array;
+        layer?(): number;
+        uv?(): Float32Array;
+        material?(): Float32Array;
+        normal_layer?(): number;
+        radius?(): number;
+        shape?(): $bog_gamengine_shape;
+        shader?(): $bog_gamengine_shader | null;
+    };
+    type $bog_gamengine_batch_source_node = $bog_gamengine_batch_node & {
+        is_source(): boolean;
+        source(): $bog_gamengine_batch_source | null;
+    };
+    type $bog_gamengine_batch_source = {
+        trans: Float32Array;
+        count: number;
+        aabb?: Float32Array;
+        tint?: Float32Array;
+        layer?: Float32Array;
+        uv?: Float32Array;
+    };
+    function $bog_gamengine_batch_scale_max(world: Float32Array): number;
+    class $bog_gamengine_batch extends $mol_object2 {
+        shader(next?: $bog_gamengine_shader): $bog_gamengine_shader | $bog_gamengine_shader_flat;
+        shape(next?: $bog_gamengine_shape): $bog_gamengine_shape;
+        atlas(next?: $bog_gamengine_atlas | null): $bog_gamengine_atlas | null;
+        nodes(next?: readonly $bog_gamengine_batch_node[]): readonly $bog_gamengine_batch_node[];
+        source(next?: $bog_gamengine_batch_source | null): $bog_gamengine_batch_source | null;
+        skip(next?: number): number;
+        instances(next?: number): number;
+        cull(next?: boolean): boolean;
+        near(next?: number): number;
+        far(next?: number): number;
+        cap: number;
+        count: number;
+        version: number;
+        trans: Float32Array<ArrayBuffer>;
+        tint: Float32Array<ArrayBuffer>;
+        layer: Float32Array<ArrayBuffer>;
+        uv: Float32Array<ArrayBuffer>;
+        material: Float32Array<ArrayBuffer>;
+        normal_layer: Float32Array<ArrayBuffer>;
+        grow(need: number): void;
+        fill_plain(count: number): number;
+        fill(frustum?: Float32Array | null, eye?: Float32Array | null): number;
+        fill_source(source: $bog_gamengine_batch_source, frustum?: Float32Array | null): number;
+    }
+}
+
+declare namespace $ {
+    type $bog_gamengine_batch_group_node = $bog_gamengine_batch_node & {
+        atlas(): $bog_gamengine_atlas | null;
+    };
+    type $bog_gamengine_batch_group_part = {
+        key: string;
+        shader: $bog_gamengine_shader;
+        shape: $bog_gamengine_shape;
+        atlas: $bog_gamengine_atlas | null;
+        nodes: $bog_gamengine_batch_group_node[];
+    };
+    function $bog_gamengine_batch_group_id(item: object | null): string;
+    function $bog_gamengine_batch_group(nodes: readonly $bog_gamengine_batch_group_node[], shader: (node: $bog_gamengine_batch_group_node) => $bog_gamengine_shader, shape: (node: $bog_gamengine_batch_group_node) => $bog_gamengine_shape): readonly $bog_gamengine_batch_group_part[];
+}
+
+declare namespace $ {
+    class $bog_gamengine_phys_body extends $bog_gamengine_node {
+        static readonly side_down = 1;
+        static readonly side_up = 2;
+        static readonly side_left = 4;
+        static readonly side_right = 8;
+        touched: number;
+        on_ground(): boolean;
+        on_ceil(): boolean;
+        on_wall(): boolean;
+        vel(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        size(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        kind(next?: 'aabb' | 'circle'): "circle" | "aabb";
+        still(next?: boolean): boolean;
+        ghost(next?: boolean): boolean;
+        props(): readonly $bog_gamengine_prop[];
+        hit(other: $bog_gamengine_phys_body | null, normal?: ArrayLike<number>): void;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_phys_tile extends $mol_object2 {
+        map(next?: string): string;
+        solid(next?: string): string;
+        rows(): readonly (readonly string[])[];
+        width(): number;
+        height(): number;
+        cell(x: number, y: number): boolean;
+        char(x: number, y: number): string;
+        spots(char: string): readonly (readonly [number, number])[];
+        chars(): ReadonlySet<string>;
+        cell_pos(x: number, y: number, out: Float32Array): Float32Array<ArrayBufferLike>;
+        cell_at(wx: number, wy: number, out: Int32Array): Int32Array<ArrayBufferLike>;
+        at: Int32Array<ArrayBuffer>;
+        solid_at(wx: number, wy: number): boolean;
+        ahead(wx: number, wy: number, dx: number, dy: number, dist: number): string;
+        edge(wx: number, wy: number, dx: number, dy: number): boolean;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_phys extends $mol_object2 {
+        static stat_window: number;
+        bodies(next?: readonly $bog_gamengine_phys_body[]): readonly $bog_gamengine_phys_body[];
+        tile(next?: $bog_gamengine_phys_tile | null): $bog_gamengine_phys_tile | null;
+        gravity(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        pull(): void;
+        eps: number;
+        normal: Float32Array<ArrayBuffer>;
+        times: Float32Array<ArrayBuffer>;
+        samples: number;
+        step(dt: number): void;
+        step_ms(): number;
+        step_world(dt: number): void;
+        fall(body: $bog_gamengine_phys_body, gx: number, gy: number): void;
+        move(body: $bog_gamengine_phys_body, tile: $bog_gamengine_phys_tile | null, dt: number): void;
+        col_solid(tile: $bog_gamengine_phys_tile, cx: number, cy0: number, cy1: number): boolean;
+        row_solid(tile: $bog_gamengine_phys_tile, cy: number, cx0: number, cx1: number): boolean;
+        touch(a: $bog_gamengine_phys_body, b: $bog_gamengine_phys_body): void;
+        push(a: $bog_gamengine_phys_body, b: $bog_gamengine_phys_body, px: number, py: number): void;
+        shift(body: $bog_gamengine_phys_body, sx: number, sy: number, stop: boolean): void;
+    }
+}
+
+declare namespace $ {
+    type $bog_gamengine_phys3_broad_world = {
+        count: number;
+        aabb: Float32Array;
+        inv_mass: Float32Array;
+        flags: Uint8Array;
+        shape: Uint8Array;
+    };
+    class $bog_gamengine_phys3_broad extends $mol_object2 {
+        static shape_plane: number;
+        static flag_sleep: number;
+        static flag_kinematic: number;
+        pairs: Uint32Array<ArrayBuffer>;
+        pair_count: number;
+        order: Uint32Array<ArrayBuffer>;
+        order_len: number;
+        find(world: $bog_gamengine_phys3_broad_world): number;
+        order_sync(count: number): void;
+        order_sort(aabb: Float32Array): void;
+        sweep(world: $bog_gamengine_phys3_broad_world): void;
+        planes(world: $bog_gamengine_phys3_broad_world): void;
+        push(i: number, j: number): void;
+    }
+}
+
+declare namespace $ {
+    type $bog_gamengine_phys3_narrow_world = {
+        pos: Float32Array;
+        rot: Float32Array;
+        shape: Uint8Array;
+        size: Float32Array;
+        flags: Uint8Array;
+        hull_off: Uint32Array;
+        hull_count: Uint32Array;
+        hull: Float32Array;
+    };
+    class $bog_gamengine_phys3_narrow extends $mol_object2 {
+        contact_cap: number;
+        contact_count: number;
+        contact_a: Uint32Array<ArrayBuffer>;
+        contact_b: Uint32Array<ArrayBuffer>;
+        contact_point: Float32Array<ArrayBuffer>;
+        contact_normal: Float32Array<ArrayBuffer>;
+        contact_depth: Float32Array<ArrayBuffer>;
+        world: $bog_gamengine_phys3_narrow_world;
+        pair_a: number;
+        pair_b: number;
+        flip: boolean;
+        pa: Float32Array<ArrayBuffer>;
+        pb: Float32Array<ArrayBuffer>;
+        qa: Float32Array<ArrayBuffer>;
+        qb: Float32Array<ArrayBuffer>;
+        ua: Float32Array<ArrayBuffer>;
+        ub: Float32Array<ArrayBuffer>;
+        pn: Float32Array<ArrayBuffer>;
+        axis: Float32Array<ArrayBuffer>;
+        dir: Float32Array<ArrayBuffer>;
+        tmp: Float32Array<ArrayBuffer>;
+        sup: Float32Array<ArrayBuffer>;
+        sup_local: Float32Array<ArrayBuffer>;
+        cand_count: number;
+        cand_depth: Float32Array<ArrayBuffer>;
+        cand_point: Float32Array<ArrayBuffer>;
+        poly_count: number;
+        poly: Float32Array<ArrayBuffer>;
+        poly_next: Float32Array<ArrayBuffer>;
+        si: Int32Array<ArrayBuffer>;
+        sn: number;
+        ev_count: number;
+        ev: Float32Array<ArrayBuffer>;
+        eva: Float32Array<ArrayBuffer>;
+        evb: Float32Array<ArrayBuffer>;
+        ef_count: number;
+        ef: Int32Array<ArrayBuffer>;
+        efn: Float32Array<ArrayBuffer>;
+        efd: Float32Array<ArrayBuffer>;
+        eh_count: number;
+        eh: Int32Array<ArrayBuffer>;
+        ec: Float32Array<ArrayBuffer>;
+        grow(need: number): void;
+        collide(world: $bog_gamengine_phys3_narrow_world, pairs: Uint32Array, pair_count: number): number;
+        load(i: number, c: Float32Array, q: Float32Array): void;
+        emit(px: number, py: number, pz: number, nx: number, ny: number, nz: number, depth: number): void;
+        cand_push(px: number, py: number, pz: number, depth: number): void;
+        cand_flush(nx: number, ny: number, nz: number): void;
+        rot_apply(out: Float32Array, q: Float32Array, vx: number, vy: number, vz: number): Float32Array<ArrayBufferLike>;
+        rot_unapply(out: Float32Array, q: Float32Array, vx: number, vy: number, vz: number): Float32Array<ArrayBufferLike>;
+        axes(out: Float32Array, q: Float32Array): Float32Array<ArrayBufferLike>;
+        plane_normal(i: number, q: Float32Array, out: Float32Array): Float32Array<ArrayBufferLike>;
+        sphere_sphere(): void;
+        sphere_pair(ax: number, ay: number, az: number, ra: number, bx: number, by: number, bz: number, rb: number): void;
+        sphere_plane(): void;
+        sphere_plane_point(cx: number, cy: number, cz: number, r: number, p: Float32Array, n: Float32Array): void;
+        box_plane(): void;
+        capsule_plane(): void;
+        plane_hull(): void;
+        sphere_box(): void;
+        sphere_capsule(): void;
+        capsule_capsule(): void;
+        box_box(): void;
+        box_box_face(axis: number): void;
+        clip(nx: number, ny: number, nz: number, off: number): void;
+        box_box_edge(axis: number, over: number): void;
+        support(i: number, c: Float32Array, q: Float32Array, dx: number, dy: number, dz: number, out: Float32Array): Float32Array<ArrayBufferLike>;
+        mink(dx: number, dy: number, dz: number): number;
+        gjk_epa(): void;
+        gjk(): boolean;
+        simplex(): boolean;
+        simplex_line(): boolean;
+        simplex_triangle(): boolean;
+        simplex_tetra(): boolean;
+        simplex_fill(): boolean;
+        face_add(i0: number, i1: number, i2: number): void;
+        face_remove(i: number): void;
+        horizon_edge(a: number, b: number): void;
+        epa(): void;
+        epa_emit(f: number): void;
+    }
+}
+
+declare namespace $ {
+    type $bog_gamengine_phys3_solve_world = {
+        pos: Float32Array;
+        rot: Float32Array;
+        vel: Float32Array;
+        ang: Float32Array;
+        inv_mass: Float32Array;
+        inv_inertia: Float32Array;
+        flags: Uint8Array;
+        sleep_timer: Float32Array;
+        friction(): number;
+        restitution(): number;
+        iterations(): number;
+    };
+    type $bog_gamengine_phys3_solve_narrow = {
+        contact_count: number;
+        contact_a: Uint32Array;
+        contact_b: Uint32Array;
+        contact_point: Float32Array;
+        contact_normal: Float32Array;
+        contact_depth: Float32Array;
+    };
+    type $bog_gamengine_phys3_solve_joint = {
+        iterate(): void;
+    };
+    class $bog_gamengine_phys3_solve extends $mol_object2 {
+        static beta: number;
+        static slop: number;
+        static bounce_speed: number;
+        static warm_dist: number;
+        static flag_sleep: number;
+        static flag_ghost: number;
+        world: $bog_gamengine_phys3_solve_world;
+        cap: number;
+        count: number;
+        body_a: Uint32Array<ArrayBuffer>;
+        body_b: Uint32Array<ArrayBuffer>;
+        point: Float32Array<ArrayBuffer>;
+        normal: Float32Array<ArrayBufferLike>;
+        ra: Float32Array<ArrayBuffer>;
+        rb: Float32Array<ArrayBuffer>;
+        t1: Float32Array<ArrayBuffer>;
+        t2: Float32Array<ArrayBuffer>;
+        an_a: Float32Array<ArrayBuffer>;
+        an_b: Float32Array<ArrayBuffer>;
+        at1_a: Float32Array<ArrayBuffer>;
+        at1_b: Float32Array<ArrayBuffer>;
+        at2_a: Float32Array<ArrayBuffer>;
+        at2_b: Float32Array<ArrayBuffer>;
+        mass_n: Float32Array<ArrayBuffer>;
+        mass_t1: Float32Array<ArrayBuffer>;
+        mass_t2: Float32Array<ArrayBuffer>;
+        bias: Float32Array<ArrayBuffer>;
+        pn: Float32Array<ArrayBuffer>;
+        pt1: Float32Array<ArrayBuffer>;
+        pt2: Float32Array<ArrayBuffer>;
+        pt: Float32Array<ArrayBuffer>;
+        live: Uint8Array<ArrayBuffer>;
+        prev_count: number;
+        prev_a: Uint32Array<ArrayBuffer>;
+        prev_b: Uint32Array<ArrayBuffer>;
+        prev_point: Float32Array<ArrayBuffer>;
+        prev_pn: Float32Array<ArrayBuffer>;
+        prev_pt: Float32Array<ArrayBuffer>;
+        hash_cap: number;
+        hash_head: Int32Array<ArrayBuffer>;
+        hash_next: Int32Array<ArrayBuffer>;
+        tmp: Float32Array<ArrayBuffer>;
+        grow(need: number): void;
+        grow_f32(prev: Float32Array, len: number): Float32Array<ArrayBuffer>;
+        grow_u32(prev: Uint32Array, len: number): Uint32Array<ArrayBuffer>;
+        solve(world: $bog_gamengine_phys3_solve_world, narrow: $bog_gamengine_phys3_solve_narrow, dt: number, joint?: $bog_gamengine_phys3_solve_joint): number;
+        hash_of(a: number, b: number): number;
+        hash_build(): void;
+        prev_find(a: number, b: number, px: number, py: number, pz: number): number;
+        inertia_apply(i: number, vx: number, vy: number, vz: number, out: Float32Array, off: number): void;
+        axis_mass(k: number, a: number, b: number, ax: number, ay: number, az: number, out_a: Float32Array, out_b: Float32Array): number;
+        wake(i: number): void;
+        prepare(narrow: $bog_gamengine_phys3_solve_narrow, dt: number): void;
+        rel_vel(k: number, a: number, b: number): Float32Array<ArrayBuffer>;
+        apply(k: number, a: number, b: number, axis: Float32Array, ang_a: Float32Array, ang_b: Float32Array, lambda: number): void;
+        iterate(friction: number): void;
+        remember(): void;
+    }
+}
+
+declare namespace $ {
+    function $bog_gamengine_vec_add(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_sub(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_scale(out: Float32Array, a: Float32Array, k: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_len(a: Float32Array): number;
+    function $bog_gamengine_vec_norm(out: Float32Array, a: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_dot(a: Float32Array, b: Float32Array): number;
+    function $bog_gamengine_vec_cross(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_lerp(out: Float32Array, a: Float32Array, b: Float32Array, t: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_mat4_apply(out: Float32Array, m: Float32List, v: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_identity(out: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_mul(out: Float32Array, a: Float32Array, b: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_from_axis(out: Float32Array, axis: Float32Array, angle: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_from_euler(out: Float32Array, x: number, y: number, z: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_normalize(out: Float32Array, q: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_rotate(out: Float32Array, q: Float32Array, v: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_integrate(out: Float32Array, q: Float32Array, ang: Float32Array, dt: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_to_mat4(out: Float32Array, q: Float32Array, pos: Float32Array, scale: Float32Array): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_vec_quat_to_euler(out: Float32Array, q: Float32Array): Float32Array<ArrayBufferLike>;
+}
+
+declare namespace $ {
+    type $bog_gamengine_phys3_joint_world = {
+        pos: Float32Array;
+        rot: Float32Array;
+        vel: Float32Array;
+        ang: Float32Array;
+        inv_mass: Float32Array;
+        inv_inertia: Float32Array;
+        flags: Uint8Array;
+        sleep_timer: Float32Array;
+    };
+    class $bog_gamengine_phys3_joint extends $mol_object2 {
+        static type_point: number;
+        static type_hinge: number;
+        static type_slider: number;
+        static type_spring: number;
+        static beta: number;
+        static flag_sleep: number;
+        static sleep_speed: number;
+        world: $bog_gamengine_phys3_joint_world;
+        cap: number;
+        count: number;
+        type: Uint8Array<ArrayBuffer>;
+        a: Uint32Array<ArrayBuffer>;
+        b: Uint32Array<ArrayBuffer>;
+        anchor_a: Float32Array<ArrayBuffer>;
+        anchor_b: Float32Array<ArrayBuffer>;
+        axis_a: Float32Array<ArrayBuffer>;
+        axis_b: Float32Array<ArrayBuffer>;
+        ref_a: Float32Array<ArrayBuffer>;
+        ref_b: Float32Array<ArrayBuffer>;
+        rel: Float32Array<ArrayBuffer>;
+        param: Float32Array<ArrayBuffer>;
+        imp_lin: Float32Array<ArrayBuffer>;
+        imp_ang: Float32Array<ArrayBuffer>;
+        lim: Int8Array<ArrayBuffer>;
+        live: Uint8Array<ArrayBuffer>;
+        ima: Float32Array<ArrayBuffer>;
+        imb: Float32Array<ArrayBuffer>;
+        ra: Float32Array<ArrayBuffer>;
+        rb: Float32Array<ArrayBuffer>;
+        iwa: Float32Array<ArrayBuffer>;
+        iwb: Float32Array<ArrayBuffer>;
+        axis: Float32Array<ArrayBuffer>;
+        u: Float32Array<ArrayBuffer>;
+        v: Float32Array<ArrayBuffer>;
+        kin: Float32Array<ArrayBuffer>;
+        mass_u: Float32Array<ArrayBuffer>;
+        mass_v: Float32Array<ArrayBuffer>;
+        mass_lim: Float32Array<ArrayBuffer>;
+        bias_lin: Float32Array<ArrayBuffer>;
+        bias_ang: Float32Array<ArrayBuffer>;
+        lim_target: Float32Array<ArrayBuffer>;
+        tmp: Float32Array<ArrayBuffer>;
+        tmp2: Float32Array<ArrayBuffer>;
+        tmp3: Float32Array<ArrayBuffer>;
+        mat: Float32Array<ArrayBuffer>;
+        q1: Float32Array<ArrayBuffer>;
+        q2: Float32Array<ArrayBuffer>;
+        q3: Float32Array<ArrayBuffer>;
+        grow(need: number): void;
+        grow_f32(prev: Float32Array, len: number): Float32Array<ArrayBuffer>;
+        grow_u32(prev: Uint32Array, len: number): Uint32Array<ArrayBuffer>;
+        grow_u8(prev: Uint8Array, len: number): Uint8Array<ArrayBuffer>;
+        add(type: number, a: number, b: number, anchor_a: ArrayLike<number>, anchor_b: ArrayLike<number>, axis?: ArrayLike<number>, param?: ArrayLike<number>): number;
+        remove(index: number): number;
+        body_remove(index: number, last: number): void;
+        rotate_inv(out: Float32Array, q: Float32Array, v: Float32Array): Float32Array<ArrayBufferLike>;
+        perp(nx: number, ny: number, nz: number, out: Float32Array): Float32Array<ArrayBufferLike>;
+        inertia_world(i: number, out: Float32Array, off: number): void;
+        invert3(src: Float32Array, soff: number, dst: Float32Array, doff: number): void;
+        quad(m: Float32Array, off: number, x: number, y: number, z: number): number;
+        mass_lin(k: number, nx: number, ny: number, nz: number): number;
+        mass_ang(k: number, nx: number, ny: number, nz: number): number;
+        kin_lin(k: number): void;
+        kin_skew(r: Float32Array, r3: number, iw: Float32Array, i9: number, m: Float32Array): void;
+        kin_ang(k: number): void;
+        rel_vel(k: number): Float32Array<ArrayBuffer>;
+        rel_ang(k: number): Float32Array<ArrayBuffer>;
+        apply_lin(k: number, lx: number, ly: number, lz: number): void;
+        apply_ang(k: number, tx: number, ty: number, tz: number): void;
+        active(i: number): boolean;
+        moving(i: number): boolean;
+        wake(i: number): void;
+        prepare(world: $bog_gamengine_phys3_joint_world, dt: number): void;
+        iterate(): void;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_phys3 extends $mol_object2 {
+        static shape_sphere: number;
+        static shape_box: number;
+        static shape_capsule: number;
+        static shape_plane: number;
+        static shape_hull: number;
+        static flag_sleep: number;
+        static flag_ghost: number;
+        static flag_kinematic: number;
+        static sleep_speed: number;
+        static sleep_time: number;
+        static stat_window: number;
+        cap: number;
+        count: number;
+        pos: Float32Array<ArrayBuffer>;
+        rot: Float32Array<ArrayBuffer>;
+        vel: Float32Array<ArrayBuffer>;
+        ang: Float32Array<ArrayBuffer>;
+        mass: Float32Array<ArrayBuffer>;
+        inv_mass: Float32Array<ArrayBuffer>;
+        inv_inertia: Float32Array<ArrayBuffer>;
+        shape: Uint8Array<ArrayBuffer>;
+        size: Float32Array<ArrayBuffer>;
+        flags: Uint8Array<ArrayBuffer>;
+        trans: Float32Array<ArrayBuffer>;
+        aabb: Float32Array<ArrayBuffer>;
+        sleep_timer: Float32Array<ArrayBuffer>;
+        hull_off: Uint32Array<ArrayBuffer>;
+        hull_count: Uint32Array<ArrayBuffer>;
+        hull: Float32Array<ArrayBuffer>;
+        hull_len: number;
+        handle_at: Int32Array<ArrayBuffer>;
+        index_at: Int32Array<ArrayBuffer>;
+        handle_seq: number;
+        free: Int32Array<ArrayBuffer>;
+        free_count: number;
+        pos_view: Float32Array[];
+        rot_view: Float32Array[];
+        ang_view: Float32Array[];
+        trans_view: Float32Array[];
+        tmp_scale: Float32Array<ArrayBuffer>;
+        tmp_point: Float32Array<ArrayBuffer>;
+        broad: $bog_gamengine_phys3_broad;
+        narrow: $bog_gamengine_phys3_narrow;
+        solve: $bog_gamengine_phys3_solve;
+        joint: $bog_gamengine_phys3_joint;
+        constructor();
+        gravity(next?: Float32Array): Float32Array<ArrayBufferLike>;
+        friction(next?: number): number;
+        restitution(next?: number): number;
+        iterations(next?: number): number;
+        pull(): void;
+        grow(need: number): void;
+        views(buf: Float32Array, stride: number): Float32Array<ArrayBufferLike>[];
+        grow_f32(prev: Float32Array, len: number): Float32Array<ArrayBuffer>;
+        add(shape: number, size: Float32Array, mass: number, pos: Float32Array, rot?: Float32Array): number;
+        handle_grow(need: number): void;
+        handle_new(index: number): number;
+        index_of(handle: number): number;
+        handle_of(index: number): number;
+        pos_of(handle: number): Float32Array<ArrayBufferLike> | null;
+        rot_of(handle: number): Float32Array<ArrayBufferLike> | null;
+        mass_of(handle: number, next?: number): number;
+        flag_set(i: number, flag: number, on: boolean): void;
+        ghost_of(handle: number, next?: boolean): boolean;
+        kinematic_of(handle: number, next?: boolean): boolean;
+        move(handle: number, pos: ArrayLike<number>, rot?: ArrayLike<number>): boolean;
+        mass_set(i: number, mass: number): void;
+        remove(handle: number): boolean;
+        drop(index: number): number;
+        swap(index: number, last: number): void;
+        hull_points(index: number, points: Float32Array): void;
+        scale_of(i: number): Float32Array<ArrayBuffer>;
+        trans_write(i: number): void;
+        timestep: number;
+        max_steps: number;
+        pending: number;
+        steps_done: number;
+        times: Float32Array<ArrayBuffer>;
+        samples: number;
+        step(dt: number): void;
+        step_ms(): number;
+        step_world(dt: number): void;
+        substep(dt: number): void;
+        bounds(): void;
+        bounds_of(i: number): void;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_scene extends $bog_gamengine_node {
+        clock(next?: $bog_gamengine_clock): $bog_gamengine_clock;
+        is_scene(): boolean;
+        auto_nodes(next?: readonly $bog_gamengine_node[]): readonly $bog_gamengine_node[];
+        nodes(): readonly $bog_gamengine_node[];
+        lights(): readonly $bog_gamengine_light[];
+        Shader_sprite(next?: $bog_gamengine_shader): $bog_gamengine_shader | $bog_gamengine_shader_sprite;
+        Shader_solid(next?: $bog_gamengine_shader): $bog_gamengine_shader | $bog_gamengine_shader_solid;
+        Shader_plain(next?: $bog_gamengine_shader): $bog_gamengine_shader | $bog_gamengine_shader_solid_plain;
+        Shape_quad(next?: $bog_gamengine_shape): $bog_gamengine_shape;
+        Batch(key: string): $bog_gamengine_batch;
+        node_source(node: $bog_gamengine_node): $bog_gamengine_batch_source | null;
+        node_drawn(node: $bog_gamengine_node): boolean;
+        node_shader(node: $bog_gamengine_batch_group_node): $bog_gamengine_shader | $bog_gamengine_shader_sprite | $bog_gamengine_shader_solid | $bog_gamengine_shader_solid_plain;
+        node_shape(node: $bog_gamengine_batch_group_node): $bog_gamengine_shape;
+        auto_batches(): readonly $bog_gamengine_batch[];
+        batches(next?: readonly $bog_gamengine_batch[]): readonly $bog_gamengine_batch[];
+        phys(next?: $bog_gamengine_phys | null): $bog_gamengine_phys | null;
+        phys3(next?: $bog_gamengine_phys3 | null): $bog_gamengine_phys3 | null;
+        input(next?: $bog_gamengine_input | null): $bog_gamengine_input | null;
+        cam(next?: $bog_gamengine_cam | null): $bog_gamengine_cam | null;
+        aspect(next?: number): number;
+        frame_done: number;
+        frustum: Float32Array<ArrayBuffer>;
+        eye: Float32Array<ArrayBuffer>;
+        step(): number;
+    }
+}
+
+declare namespace $ {
+    type $bog_gamengine_shader_post_step = {
+        readonly shader: $bog_gamengine_shader_post;
+        readonly scale: number;
+        readonly from: 'in' | 'prev';
+        readonly extra: 'in' | 'prev' | null;
+    };
+    class $bog_gamengine_shader_post extends $bog_gamengine_shader {
+        face(): {
+            readonly glob: {
+                readonly source: "sampler2D";
+                readonly texel: "vec2";
+            };
+            readonly pipe: {
+                readonly pipe_uv: "vec2";
+            };
+            readonly output: {
+                readonly color: "vec4";
+            };
+        };
+        vert(): string;
+        frag(): string;
+        steps(): readonly $bog_gamengine_shader_post_step[];
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_shader_post_tone extends $bog_gamengine_shader_post {
+        frag(): string;
+    }
+}
+
+declare namespace $ {
+    type $bog_gamengine_shape_gltf_doc = {
+        meshes?: readonly {
+            primitives?: readonly {
+                attributes: Record<string, number>;
+                indices?: number;
+            }[];
+        }[];
+        accessors?: readonly {
+            bufferView?: number;
+            byteOffset?: number;
+            componentType: number;
+            count: number;
+            type: string;
+        }[];
+        bufferViews?: readonly {
+            buffer: number;
+            byteOffset?: number;
+            byteLength: number;
+            byteStride?: number;
+        }[];
+        nodes?: readonly {
+            name?: string;
+            children?: readonly number[];
+            translation?: readonly number[];
+            rotation?: readonly number[];
+            scale?: readonly number[];
+        }[];
+        skins?: readonly {
+            joints: readonly number[];
+            inverseBindMatrices?: number;
+        }[];
+        animations?: readonly {
+            name?: string;
+            channels: readonly {
+                sampler: number;
+                target: {
+                    node?: number;
+                    path: string;
+                };
+            }[];
+            samplers: readonly {
+                input: number;
+                output: number;
+                interpolation?: string;
+            }[];
+        }[];
+    };
+    type $bog_gamengine_shape_gltf_skeleton = {
+        count: number;
+        names: readonly string[];
+        parents: Int32Array;
+        order: Int32Array;
+        base: Float32Array;
+        binds: Float32Array;
+    };
+    type $bog_gamengine_shape_gltf_path = 'translation' | 'rotation' | 'scale';
+    type $bog_gamengine_shape_gltf_channel = {
+        joint: number;
+        path: $bog_gamengine_shape_gltf_path;
+        step: boolean;
+        times: Float32Array;
+        values: Float32Array;
+    };
+    type $bog_gamengine_shape_gltf_clip = {
+        name: string;
+        duration: number;
+        channels: readonly $bog_gamengine_shape_gltf_channel[];
+    };
+    class $bog_gamengine_shape_gltf extends $bog_gamengine_shape {
+        data(next?: ArrayBuffer | null): ArrayBuffer | null;
+        chunks(): {
+            json: $bog_gamengine_shape_gltf_doc;
+            bin: ArrayBuffer | null;
+        };
+        json(next?: $bog_gamengine_shape_gltf_doc): $bog_gamengine_shape_gltf_doc;
+        bin(next?: ArrayBuffer): ArrayBuffer;
+        accessor(index: number): Float32Array<ArrayBuffer>;
+        arrays(): {
+            geometry: Float32Array<ArrayBuffer>;
+            normals: Float32Array<ArrayBuffer>;
+            skin: Float32Array<ArrayBuffer>;
+            joints: Float32Array<ArrayBuffer>;
+            weights: Float32Array<ArrayBuffer>;
+        };
+        geometry(): Float32Array<ArrayBuffer>;
+        normals(): Float32Array<ArrayBuffer>;
+        skin(): Float32Array<ArrayBuffer>;
+        joints(): Float32Array<ArrayBuffer>;
+        weights(): Float32Array<ArrayBuffer>;
+        skeleton(): $bog_gamengine_shape_gltf_skeleton | null;
+        clips(): Map<string, $bog_gamengine_shape_gltf_clip>;
+        mode(): "triangles";
+    }
+}
+
+declare namespace $ {
+    const $bog_gamengine_skin_max = 64;
+    const $bog_gamengine_skin_empty: Float32Array<ArrayBuffer>;
+    function $bog_gamengine_skin_mat_trs(out: Float32Array, at: number, trs: Float32Array, from: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_skin_mat_mul(out: Float32Array, at: number, left: Float32Array, left_at: number, right: Float32Array, right_at: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_skin_quat_mix(out: Float32Array, at: number, left: Float32Array, left_at: number, right: Float32Array, right_at: number, weight: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_skin_sample(channel: $bog_gamengine_shape_gltf_channel, time: number, out: Float32Array, at: number): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_skin_bones(batch: {
+        nodes(): readonly unknown[];
+    }): Float32Array<ArrayBuffer> | null;
+    function $bog_gamengine_skin_shape_joints(shape: unknown): Float32Array<ArrayBufferLike>;
+    function $bog_gamengine_skin_shape_weights(shape: unknown): Float32Array<ArrayBufferLike>;
+    class $bog_gamengine_skin extends $mol_object2 {
+        shape(next?: $bog_gamengine_shape_gltf | null): $bog_gamengine_shape_gltf | null;
+        clip(next?: string): string;
+        mix(next?: string): string;
+        weight(next?: number): number;
+        time(next?: number): number;
+        loop(next?: boolean): boolean;
+        speed(next?: number): number;
+        blend(clip: string, weight: number): number;
+        duration(): number;
+        version: number;
+        bones: Float32Array<ArrayBuffer>;
+        locals: Float32Array<ArrayBuffer>;
+        worlds: Float32Array<ArrayBuffer>;
+        trs_main: Float32Array<ArrayBuffer>;
+        trs_mix: Float32Array<ArrayBuffer>;
+        done_skeleton: $bog_gamengine_shape_gltf_skeleton | null;
+        done_time: number;
+        done_clip: string;
+        done_mix: string;
+        done_weight: number;
+        prepare(): Float32Array<ArrayBuffer>;
+        apply(clip: $bog_gamengine_shape_gltf_clip | undefined, time: number, trs: Float32Array, count: number, base: Float32Array): Float32Array<ArrayBufferLike>;
+        pose(): Float32Array<ArrayBuffer>;
+        step(dt: number): void;
+    }
+}
+
+declare namespace $ {
+    class $bog_gamengine_skin_gl_data extends Object {
+        readonly gl: WebGL2RenderingContext;
+        readonly width: number;
+        readonly height: number;
+        readonly native: WebGLTexture;
+        constructor(gl: WebGL2RenderingContext, width: number, height: number);
+        send(floats: Float32Array): Float32Array<ArrayBufferLike>;
+        dispose(): this;
+    }
+    function $bog_gamengine_skin_gl_bones(gl: WebGL2RenderingContext): $bog_gamengine_skin_gl_data;
+}
+
+declare namespace $ {
+    class $bog_gamengine_shader_depth extends $bog_gamengine_shader {
+        face(): {
+            readonly glob: {
+                readonly shadow_mat: "mat4";
+            };
+            readonly input: {
+                readonly vertex: "vec3";
+                readonly uv: "vec2";
+                readonly normal: "vec3";
+                readonly inst_trans: "mat4";
+                readonly inst_tint: "vec4";
+                readonly inst_layer: "float";
+                readonly inst_uv: "vec4";
+                readonly inst_material: "vec4";
+                readonly inst_normal_layer: "float";
+            };
+        };
+        vert(): string;
+        frag(): string;
+    }
+}
+
+declare namespace $ {
 
 	export class $bog_gamengine_draw extends $mol_view {
 		width( ): number
@@ -2299,12 +3401,34 @@ declare namespace $ {
 			'width': ReturnType< $bog_gamengine_draw['width'] >,
 			'height': ReturnType< $bog_gamengine_draw['height'] >,
 		})  & ReturnType< $mol_view['field'] >
+		dpr( ): number
 		scene( ): $bog_gamengine_scene
 		cam( ): $bog_gamengine_cam
 		light_dir( ): Float32Array
+		clear( next?: Float32Array ): Float32Array
+		fog( next?: Float32Array ): Float32Array
+		fog_color( next?: Float32Array ): Float32Array
 		ambient( ): number
 		wireframe( next?: boolean ): boolean
+		shadows( next?: boolean ): boolean
+		shadow_size( next?: number ): number
+		shadow_range( next?: number ): number
+		post( next?: boolean ): boolean
+		Tone( ): $bog_gamengine_shader_post_tone
+		passes( ): readonly(any)[]
 		stat( ): string
+		report( ): ({ 
+			'tick': number,
+			'fill': number,
+			'shadow': number,
+			'main': number,
+			'post': number,
+			'batches': number,
+			'instances': number,
+			'draws': number,
+			'triangles': number,
+			'bytes': number,
+		}) 
 	}
 	
 }
@@ -2316,9 +3440,19 @@ declare namespace $.$$ {
             proj: 'mat4';
             view: 'mat4';
             atlas: 'sampler2DArray';
-            light_dir: 'vec3';
-            ambient: 'float';
+            light_count: 'int';
+            light_pos: 'vec4[8]';
+            light_dir: 'vec4[8]';
+            light_color: 'vec4[8]';
+            ambient: 'vec3';
+            cam_pos: 'vec3';
             wireframe: 'float';
+            fog: 'vec2';
+            fog_color: 'vec3';
+            shadow_mat: 'mat4';
+            shadow_map: 'sampler2DShadow';
+            shadow_light: 'int';
+            bones: 'sampler2D';
         };
         input: {
             vertex: 'vec3';
@@ -2328,22 +3462,49 @@ declare namespace $.$$ {
             inst_tint: 'vec4';
             inst_layer: 'float';
             inst_uv: 'vec4';
+            inst_material: 'vec4';
+            inst_normal_layer: 'float';
+            joints: 'vec4';
+            weights: 'vec4';
         };
     };
-    type $bog_gamengine_draw_slot = {
+    export type $bog_gamengine_draw_step = {
+        readonly shader: $bog_gamengine_shader_post;
+        readonly from: string;
+        readonly extra: string | null;
+        readonly out: string | null;
+    };
+    export class $bog_gamengine_draw_slot extends Object {
         batch: $bog_gamengine_batch;
         program: $bog_gamengine_gl_program<$bog_gamengine_draw_face>;
         proj: WebGLUniformLocation | null;
         view: WebGLUniformLocation | null;
+        light_count: WebGLUniformLocation | null;
+        light_pos: WebGLUniformLocation | null;
         light_dir: WebGLUniformLocation | null;
+        light_color: WebGLUniformLocation | null;
         ambient: WebGLUniformLocation | null;
+        cam_pos: WebGLUniformLocation | null;
+        fog: WebGLUniformLocation | null;
+        fog_color: WebGLUniformLocation | null;
         wireframe: WebGLUniformLocation | null;
+        shadow_mat: WebGLUniformLocation | null;
+        shadow_map: WebGLUniformLocation | null;
+        shadow_light: WebGLUniformLocation | null;
+        bones: WebGLUniformLocation | null;
+        bones_tex: $bog_gamengine_skin_gl_data | null;
         depth: boolean;
+        ready: boolean;
         vao: WebGLVertexArrayObject;
+        vertex: $bog_gamengine_gl_buffer;
+        live: boolean;
         trans: $bog_gamengine_gl_buffer;
         tint: $bog_gamengine_gl_buffer;
         layer: $bog_gamengine_gl_buffer | null;
         uv: $bog_gamengine_gl_buffer | null;
+        material: $bog_gamengine_gl_buffer | null;
+        normal_layer: $bog_gamengine_gl_buffer | null;
+        buffers: $bog_gamengine_gl_buffer[];
         atlas: $bog_gamengine_atlas | null;
         sampler: WebGLUniformLocation | null;
         tex: $bog_gamengine_draw_tex | null;
@@ -2351,36 +3512,107 @@ declare namespace $.$$ {
         wire: GLenum | null;
         size: number;
         cap: number;
-    };
-    type $bog_gamengine_draw_tex = {
+        tris: number;
+        stride: number;
+        bytes_shape: number;
+        bytes: number;
+        dispose(gl: WebGL2RenderingContext): this;
+    }
+    export class $bog_gamengine_draw_tex extends Object {
+        atlas: $bog_gamengine_atlas;
         native: WebGLTexture | null;
-    };
+        dispose(gl: WebGL2RenderingContext): this;
+    }
+    export function $bog_gamengine_draw_shadow_mat(dir: Float32Array, at: number, center: Float32Array, range: number, out: Float32Array): Float32Array<ArrayBufferLike>;
     export class $bog_gamengine_draw extends $.$bog_gamengine_draw {
         slots_all: WeakMap<$bog_gamengine_batch, $bog_gamengine_draw_slot>;
+        slots_last: readonly $bog_gamengine_draw_slot[];
         textures_all: WeakMap<$bog_gamengine_atlas, $bog_gamengine_draw_tex>;
+        textures_last: readonly $bog_gamengine_draw_tex[];
         ambient_vec: Float32Array<ArrayBuffer>;
+        cam_pos_vec: Float32Array<ArrayBuffer>;
+        fog_vec: Float32Array<ArrayBuffer>;
+        fog_color_vec: Float32Array<ArrayBuffer>;
+        lights_pos: Float32Array<ArrayBuffer>;
+        lights_dir: Float32Array<ArrayBuffer>;
+        lights_color: Float32Array<ArrayBuffer>;
+        lights_count: number;
         wire_off: Float32Array<ArrayBuffer>;
         wire_on: Float32Array<ArrayBuffer>;
+        shadow_mat_buf: Float32Array<ArrayBuffer>;
+        shadow_last: $bog_gamengine_gl_depth_target | null;
+        sun_at: number;
+        shadow_at: number;
         gaps: Float32Array<ArrayBuffer>;
         ticks: Float32Array<ArrayBuffer>;
+        steps_ms: Float32Array<ArrayBuffer>;
+        fills_ms: Float32Array<ArrayBuffer>;
+        shadows_ms: Float32Array<ArrayBuffer>;
+        mains_ms: Float32Array<ArrayBuffer>;
+        posts_ms: Float32Array<ArrayBuffer>;
+        batches_ring: Float32Array<ArrayBuffer>;
+        instances_ring: Float32Array<ArrayBuffer>;
+        draws_ring: Float32Array<ArrayBuffer>;
+        triangles_ring: Float32Array<ArrayBuffer>;
+        bytes_ring: Float32Array<ArrayBuffer>;
+        count_batches: number;
+        count_instances: number;
+        count_draws: number;
+        count_triangles: number;
+        count_bytes: number;
+        texel_vec: Float32Array<ArrayBuffer>;
+        post_last: Map<string, $bog_gamengine_gl_color_target>;
+        post_vao_last: WebGLVertexArrayObject | null;
         samples: number;
         paint_at: number;
         context(): WebGL2RenderingContext;
+        dpr(): number;
         width(): number;
         height(): number;
         viewport(): readonly [0, 0, number, number];
         scissor(): readonly [0, 0, number, number];
         render(): void;
         light_dir(next?: Float32Array): Float32Array<ArrayBufferLike>;
+        clear(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        fog(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        fog_color(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
         proj(): $mol_3d_mat4;
         slots(): readonly $bog_gamengine_draw_slot[];
+        slot_drop(slot: $bog_gamengine_draw_slot): $bog_gamengine_draw_slot;
+        tex_drop(tex: $bog_gamengine_draw_tex): $bog_gamengine_draw_tex;
+        shadow_shader(): $bog_gamengine_shader_depth;
+        shadow_target(): $bog_gamengine_gl_depth_target;
+        post_plan(): readonly $bog_gamengine_draw_step[];
+        post_targets(): readonly string[];
+        post_vao(): WebGLVertexArrayObject;
+        post_drop(): this;
+        destructor(): void;
         slot(batch: $bog_gamengine_batch): $bog_gamengine_draw_slot | null;
         shape_ready(shape: $bog_gamengine_shape): boolean;
         tex(atlas: $bog_gamengine_atlas): $bog_gamengine_draw_tex;
-        textures(): number;
+        textures(): readonly $bog_gamengine_draw_tex[];
+        lights_fill(): number;
+        step(): number;
         paint(): void;
-        paint_slot(gl: WebGL2RenderingContext, slot: $bog_gamengine_draw_slot, proj: Float32Array, view: Float32Array, light_dir: Float32Array, wireframe: boolean): void;
-        measure(): void;
+        post_run(gl: WebGL2RenderingContext, plan: readonly $bog_gamengine_draw_step[]): number;
+        slot_send(gl: WebGL2RenderingContext, slot: $bog_gamengine_draw_slot): boolean;
+        count_fill(slots: readonly $bog_gamengine_draw_slot[]): number;
+        shadow_pass(gl: WebGL2RenderingContext, slots: readonly $bog_gamengine_draw_slot[]): $bog_gamengine_gl_depth_target;
+        paint_slot(gl: WebGL2RenderingContext, slot: $bog_gamengine_draw_slot, proj: Float32Array, view: Float32Array, wireframe: boolean): void;
+        measure(at_start: number, at_step: number, at_prep: number, at_fill: number, at_shadow: number, at_main: number, at_post: number): void;
+        mean(ring: Float32Array, size: number): number;
+        report(): {
+            tick: number;
+            fill: number;
+            shadow: number;
+            main: number;
+            post: number;
+            batches: number;
+            instances: number;
+            draws: number;
+            triangles: number;
+            bytes: number;
+        };
         stat(): string;
     }
     export {};
@@ -3061,115 +4293,6 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-    /**
-    * Key names code for hotkey
-    * @see [mol_hotkey](../../hotkey/hotkey.view.ts)
-    */
-    enum $mol_keyboard_code {
-        backspace = 8,
-        tab = 9,
-        enter = 13,
-        shift = 16,
-        ctrl = 17,
-        alt = 18,
-        pause = 19,
-        capsLock = 20,
-        escape = 27,
-        space = 32,
-        pageUp = 33,
-        pageDown = 34,
-        end = 35,
-        home = 36,
-        left = 37,
-        up = 38,
-        right = 39,
-        down = 40,
-        insert = 45,
-        delete = 46,
-        key0 = 48,
-        key1 = 49,
-        key2 = 50,
-        key3 = 51,
-        key4 = 52,
-        key5 = 53,
-        key6 = 54,
-        key7 = 55,
-        key8 = 56,
-        key9 = 57,
-        A = 65,
-        B = 66,
-        C = 67,
-        D = 68,
-        E = 69,
-        F = 70,
-        G = 71,
-        H = 72,
-        I = 73,
-        J = 74,
-        K = 75,
-        L = 76,
-        M = 77,
-        N = 78,
-        O = 79,
-        P = 80,
-        Q = 81,
-        R = 82,
-        S = 83,
-        T = 84,
-        U = 85,
-        V = 86,
-        W = 87,
-        X = 88,
-        Y = 89,
-        Z = 90,
-        metaLeft = 91,
-        metaRight = 92,
-        select = 93,
-        numpad0 = 96,
-        numpad1 = 97,
-        numpad2 = 98,
-        numpad3 = 99,
-        numpad4 = 100,
-        numpad5 = 101,
-        numpad6 = 102,
-        numpad7 = 103,
-        numpad8 = 104,
-        numpad9 = 105,
-        multiply = 106,
-        add = 107,
-        subtract = 109,
-        decimal = 110,
-        divide = 111,
-        F1 = 112,
-        F2 = 113,
-        F3 = 114,
-        F4 = 115,
-        F5 = 116,
-        F6 = 117,
-        F7 = 118,
-        F8 = 119,
-        F9 = 120,
-        F10 = 121,
-        F11 = 122,
-        F12 = 123,
-        numLock = 144,
-        scrollLock = 145,
-        semicolon = 186,
-        equals = 187,
-        comma = 188,
-        dash = 189,
-        period = 190,
-        forwardSlash = 191,
-        graveAccent = 192,
-        bracketOpen = 219,
-        slashBack = 220,
-        slashBackLeft = 226,
-        bracketClose = 221,
-        quoteSingle = 222
-    }
-}
-
-declare namespace $ {
 
 	export class $mol_keyboard_state extends $mol_plugin {
 		down( next?: any ): any
@@ -3193,42 +4316,6 @@ declare namespace $.$$ {
 }
 
 declare namespace $ {
-    class $bog_gamengine_shader_solid extends $bog_gamengine_shader {
-        face(): {
-            readonly glob: {
-                readonly proj: "mat4";
-                readonly view: "mat4";
-                readonly atlas: "sampler2DArray";
-                readonly light_dir: "vec3";
-                readonly ambient: "float";
-                readonly wireframe: "float";
-            };
-            readonly input: {
-                readonly vertex: "vec3";
-                readonly uv: "vec2";
-                readonly normal: "vec3";
-                readonly inst_trans: "mat4";
-                readonly inst_tint: "vec4";
-                readonly inst_layer: "float";
-                readonly inst_uv: "vec4";
-            };
-            readonly pipe: {
-                readonly pipe_uv: "vec2";
-                readonly pipe_layer: "float";
-                readonly pipe_tint: "vec4";
-                readonly pipe_normal: "vec3";
-            };
-            readonly output: {
-                readonly color: "vec4";
-            };
-        };
-        depth(): boolean;
-        vert(): string;
-        frag(): string;
-    }
-}
-
-declare namespace $ {
     class $bog_gamengine_shape_box extends $bog_gamengine_shape {
         geometry(): Float32Array<ArrayBuffer>;
         skin(): Float32Array<ArrayBuffer>;
@@ -3239,7 +4326,7 @@ declare namespace $ {
 
 declare namespace $ {
     class $bog_gamengine_shape_plane extends $bog_gamengine_shape {
-        tile(next?: number): number;
+        tile(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
         geometry(): Float32Array<ArrayBuffer>;
         skin(): Float32Array<ArrayBuffer>;
         normals(): Float32Array<ArrayBuffer>;
@@ -3251,19 +4338,31 @@ declare namespace $ {
         fov(next?: number): number;
         near(next?: number): number;
         far(next?: number): number;
+        follow(next?: $bog_gamengine_node | null): $bog_gamengine_node | null;
+        lift(next?: number): number;
+        step(dt: number): void;
         props(): readonly $bog_gamengine_prop[];
         proj(aspect: number): $mol_3d_mat4;
     }
 }
 
 declare namespace $ {
+    type $bog_gamengine_mesh_lod = {
+        dist: number;
+        shape: $bog_gamengine_shape;
+    };
     class $bog_gamengine_mesh extends $bog_gamengine_node {
+        lods(next?: readonly $bog_gamengine_mesh_lod[]): readonly $bog_gamengine_mesh_lod[];
+        radius(): number;
         shape(next?: $bog_gamengine_shape): $bog_gamengine_shape;
         atlas(next?: $bog_gamengine_atlas | null): $bog_gamengine_atlas | null;
         frame(next?: string): string;
         size(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        material(next?: ArrayLike<number>): Float32Array<ArrayBufferLike>;
+        normal_frame(next?: string): string;
         props(): readonly $bog_gamengine_prop[];
         layer(): number;
+        normal_layer(): number;
         uv(): Float32Array<ArrayBuffer>;
         trans(): $mol_3d_mat4;
     }
@@ -3432,7 +4531,7 @@ declare namespace $ {
 		ReturnType< $bog_gamengine_batch['nodes'] >
 	>
 	type $bog_gamengine_shape_plane__tile_bog_game_arcade_29 = $mol_type_enforce<
-		ReturnType< $bog_game_arcade['map_width'] >
+		ReturnType< $bog_game_arcade['map_tile'] >
 		,
 		ReturnType< $bog_gamengine_shape_plane['tile'] >
 	>
@@ -3596,130 +4695,135 @@ declare namespace $ {
 		,
 		ReturnType< $bog_gamengine_atlas['uris'] >
 	>
-	type $bog_gamengine_scene__kids_bog_game_arcade_62 = $mol_type_enforce<
+	type $bog_gamengine_scene__cam_bog_game_arcade_62 = $mol_type_enforce<
+		ReturnType< $bog_game_arcade['Cam'] >
+		,
+		ReturnType< $bog_gamengine_scene['cam'] >
+	>
+	type $bog_gamengine_scene__kids_bog_game_arcade_63 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['nodes'] >
 		,
 		ReturnType< $bog_gamengine_scene['kids'] >
 	>
-	type $bog_gamengine_scene__batches_bog_game_arcade_63 = $mol_type_enforce<
+	type $bog_gamengine_scene__batches_bog_game_arcade_64 = $mol_type_enforce<
 		readonly(any)[]
 		,
 		ReturnType< $bog_gamengine_scene['batches'] >
 	>
-	type $bog_gamengine_cam_deep__fov_bog_game_arcade_64 = $mol_type_enforce<
+	type $bog_gamengine_cam_deep__fov_bog_game_arcade_65 = $mol_type_enforce<
 		number
 		,
 		ReturnType< $bog_gamengine_cam_deep['fov'] >
 	>
-	type $bog_gamengine_cam_deep__pos_bog_game_arcade_65 = $mol_type_enforce<
+	type $bog_gamengine_cam_deep__pos_bog_game_arcade_66 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['cam_pos'] >
 		,
 		ReturnType< $bog_gamengine_cam_deep['pos'] >
 	>
-	type $bog_gamengine_cam_deep__rot_bog_game_arcade_66 = $mol_type_enforce<
+	type $bog_gamengine_cam_deep__rot_bog_game_arcade_67 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['cam_rot'] >
 		,
 		ReturnType< $bog_gamengine_cam_deep['rot'] >
 	>
-	type $bog_gamengine_mesh__shape_bog_game_arcade_67 = $mol_type_enforce<
+	type $bog_gamengine_mesh__shape_bog_game_arcade_68 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Box'] >
 		,
 		ReturnType< $bog_gamengine_mesh['shape'] >
 	>
-	type $bog_gamengine_mesh__atlas_bog_game_arcade_68 = $mol_type_enforce<
+	type $bog_gamengine_mesh__atlas_bog_game_arcade_69 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Atlas'] >
 		,
 		ReturnType< $bog_gamengine_mesh['atlas'] >
 	>
-	type $bog_gamengine_mesh__frame_bog_game_arcade_69 = $mol_type_enforce<
+	type $bog_gamengine_mesh__frame_bog_game_arcade_70 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['wall_frame'] >
 		,
 		ReturnType< $bog_gamengine_mesh['frame'] >
 	>
-	type $bog_gamengine_mesh__pos_bog_game_arcade_70 = $mol_type_enforce<
+	type $bog_gamengine_mesh__pos_bog_game_arcade_71 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['wall_pos'] >
 		,
 		ReturnType< $bog_gamengine_mesh['pos'] >
 	>
-	type $bog_gamengine_mesh__shape_bog_game_arcade_71 = $mol_type_enforce<
+	type $bog_gamengine_mesh__shape_bog_game_arcade_72 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Plane'] >
 		,
 		ReturnType< $bog_gamengine_mesh['shape'] >
 	>
-	type $bog_gamengine_mesh__atlas_bog_game_arcade_72 = $mol_type_enforce<
+	type $bog_gamengine_mesh__atlas_bog_game_arcade_73 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Atlas'] >
 		,
 		ReturnType< $bog_gamengine_mesh['atlas'] >
 	>
-	type $bog_gamengine_mesh__frame_bog_game_arcade_73 = $mol_type_enforce<
+	type $bog_gamengine_mesh__frame_bog_game_arcade_74 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $bog_gamengine_mesh['frame'] >
 	>
-	type $bog_gamengine_mesh__pos_bog_game_arcade_74 = $mol_type_enforce<
+	type $bog_gamengine_mesh__pos_bog_game_arcade_75 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['floor_pos'] >
 		,
 		ReturnType< $bog_gamengine_mesh['pos'] >
 	>
-	type $bog_gamengine_mesh__size_bog_game_arcade_75 = $mol_type_enforce<
+	type $bog_gamengine_mesh__size_bog_game_arcade_76 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['floor_size'] >
 		,
 		ReturnType< $bog_gamengine_mesh['size'] >
 	>
-	type $bog_gamengine_mesh__shape_bog_game_arcade_76 = $mol_type_enforce<
+	type $bog_gamengine_mesh__shape_bog_game_arcade_77 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Plane'] >
 		,
 		ReturnType< $bog_gamengine_mesh['shape'] >
 	>
-	type $bog_gamengine_mesh__atlas_bog_game_arcade_77 = $mol_type_enforce<
+	type $bog_gamengine_mesh__atlas_bog_game_arcade_78 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Atlas'] >
 		,
 		ReturnType< $bog_gamengine_mesh['atlas'] >
 	>
-	type $bog_gamengine_mesh__frame_bog_game_arcade_78 = $mol_type_enforce<
+	type $bog_gamengine_mesh__frame_bog_game_arcade_79 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $bog_gamengine_mesh['frame'] >
 	>
-	type $bog_gamengine_mesh__pos_bog_game_arcade_79 = $mol_type_enforce<
+	type $bog_gamengine_mesh__pos_bog_game_arcade_80 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['ceil_pos'] >
 		,
 		ReturnType< $bog_gamengine_mesh['pos'] >
 	>
-	type $bog_gamengine_mesh__rot_bog_game_arcade_80 = $mol_type_enforce<
+	type $bog_gamengine_mesh__rot_bog_game_arcade_81 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['ceil_rot'] >
 		,
 		ReturnType< $bog_gamengine_mesh['rot'] >
 	>
-	type $bog_gamengine_mesh__size_bog_game_arcade_81 = $mol_type_enforce<
+	type $bog_gamengine_mesh__size_bog_game_arcade_82 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['floor_size'] >
 		,
 		ReturnType< $bog_gamengine_mesh['size'] >
 	>
-	type $bog_gamengine_mesh__shape_bog_game_arcade_82 = $mol_type_enforce<
+	type $bog_gamengine_mesh__shape_bog_game_arcade_83 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Quad'] >
 		,
 		ReturnType< $bog_gamengine_mesh['shape'] >
 	>
-	type $bog_gamengine_mesh__atlas_bog_game_arcade_83 = $mol_type_enforce<
+	type $bog_gamengine_mesh__atlas_bog_game_arcade_84 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['Atlas'] >
 		,
 		ReturnType< $bog_gamengine_mesh['atlas'] >
 	>
-	type $bog_gamengine_mesh__frame_bog_game_arcade_84 = $mol_type_enforce<
+	type $bog_gamengine_mesh__frame_bog_game_arcade_85 = $mol_type_enforce<
 		string
 		,
 		ReturnType< $bog_gamengine_mesh['frame'] >
 	>
-	type $bog_gamengine_mesh__pos_bog_game_arcade_85 = $mol_type_enforce<
+	type $bog_gamengine_mesh__pos_bog_game_arcade_86 = $mol_type_enforce<
 		ReturnType< $bog_game_arcade['avatar_pos'] >
 		,
 		ReturnType< $bog_gamengine_mesh['pos'] >
 	>
-	type $bog_gamengine_mesh__rot_bog_game_arcade_86 = $mol_type_enforce<
-		ReturnType< $bog_game_arcade['cam_rot'] >
+	type $bog_gamengine_mesh__billboard_bog_game_arcade_87 = $mol_type_enforce<
+		boolean
 		,
-		ReturnType< $bog_gamengine_mesh['rot'] >
+		ReturnType< $bog_gamengine_mesh['billboard'] >
 	>
 	export class $bog_game_arcade extends $mol_stack {
 		spawn_pos( ): ReturnType< ReturnType< $bog_game_arcade['Realm'] >['spawn_pos'] >
@@ -3749,6 +4853,7 @@ declare namespace $ {
 		Box( ): $bog_gamengine_shape_box
 		walls( ): readonly(any)[]
 		Wall_batch( ): $bog_gamengine_batch
+		map_tile( ): Float32Array
 		Plane( ): $bog_gamengine_shape_plane
 		Floor_batch( ): $bog_gamengine_batch
 		Quad( ): $bog_gamengine_shape_quad
@@ -3794,6 +4899,7 @@ declare namespace $.$$ {
         wall_pos(id: string): Float32Array<ArrayBuffer>;
         floor_pos(): Float32Array<ArrayBuffer>;
         floor_size(): Float32Array<ArrayBuffer>;
+        map_tile(): Float32Array<ArrayBuffer>;
         ceil_pos(): Float32Array<ArrayBuffer>;
         ceil_rot(): Float32Array<ArrayBuffer>;
         cam_pos(): Float32Array<ArrayBuffer>;
